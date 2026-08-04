@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admission Section</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="assets/js/core.js" defer></script>
+</head>
+<body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
+  <nav id="main-nav"></nav>
+
+  <div class="max-w-6xl mx-auto p-6 space-y-6">
+    <h1 class="text-3xl font-bold text-center">Admission Section</h1>
+
+    <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+      <input id="searchInput" type="text" placeholder="Search by name or type..." class="border border-gray-300 rounded p-2 w-full sm:w-1/2">
+      <div class="space-x-2">
+        <button onclick="exportCSV()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Export CSV</button>
+        <button onclick="exportPDF()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Export PDF</button>
+        <button onclick="renderCharts()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Show Charts</button>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto rounded shadow bg-white">
+      <table class="w-full table-auto border-collapse">
+        <thead class="bg-indigo-600 text-white">
+          <tr>
+            <th class="px-4 py-2 text-left">#</th>
+            <th class="px-4 py-2 text-left">Name</th>
+            <th class="px-4 py-2 text-left">Type</th>
+            <th class="px-4 py-2 text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="flex justify-center space-x-2" id="pagination"></div>
+
+    <div class="text-right">
+      <button onclick="addAdmission()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">+ Add Admission</button>
+    </div>
+
+    <!-- Charts Section -->
+    <div id="chartsSection" class="hidden space-y-4">
+      <canvas id="pieChart" height="100"></canvas>
+      <canvas id="barChart" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- Modal (for viewing/editing) -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-lg w-full max-w-md space-y-4">
+      <h2 id="modalTitle" class="text-xl font-bold"></h2>
+      <input id="nameInput" type="text" placeholder="Name" class="w-full border p-2 rounded">
+      <select id="typeInput" class="w-full border p-2 rounded">
+        <option value="online">Online</option>
+        <option value="offline">Offline</option>
+      </select>
+      <div class="text-right space-x-2">
+        <button onclick="closeModal()" class="px-4 py-2 border rounded">Cancel</button>
+        <button id="modalSaveBtn" onclick="saveModal()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+    const role = loggedInUser?.role || "student";
+    const user = { username: loggedInUser?.username || "guest" };
+    
+    let admissions = [];
+    let currentPage = 1, pageSize = 5;
+    let editingId = null;
+    
+    const tableBody = document.getElementById("tableBody");
+    const pagination = document.getElementById("pagination");
+    const searchInput = document.getElementById("searchInput");
+    const chartsSection = document.getElementById("chartsSection");
+    const pieChartCtx = document.getElementById("pieChart");
+    const barChartCtx = document.getElementById("barChart");
+
+    let pieChart, barChart;
+
+    async function loadAdmissions() {
+      try {
+        admissions = await apiFetch('/admissions');
+        renderTable();
+      } catch (err) {
+        console.error("Failed to load admissions:", err);
+      }
+    }
+
+    function getFilteredAdmissions() {
+      return admissions.filter(r => {
+        if (role === "parent") return true;
+        if (role === "student") return r.submittedBy === user.username;
+        return true;
+      });
+    }
+
+    function renderTable() {
+      const data = applySearchFilter(getFilteredAdmissions());
+      const start = (currentPage - 1) * pageSize;
+      const paginated = data.slice(start, start + pageSize);
+      tableBody.innerHTML = "";
+
+      paginated.forEach((record, index) => {
+        tableBody.innerHTML += `
+          <tr>
+            <td class="px-4 py-2">${start + index + 1}</td>
+            <td class="px-4 py-2">${record.name}</td>
+            <td class="px-4 py-2">${record.type}</td>
+            <td class="px-4 py-2 space-x-2">
+              <button onclick="viewDetails('${record._id}')" class="text-indigo-600 hover:underline">View</button>
+              ${
+                role === "faculty"
+                  ? `<button onclick="editRecord('${record._id}')" class="text-blue-600 hover:underline">Edit</button>
+                     <button onclick="deleteRecord('${record._id}')" class="text-red-600 hover:underline">Delete</button>`
+                  : (role === "student" && record.submittedBy === user.username
+                      ? `<button onclick="deleteRecord('${record._id}')" class="text-red-600 hover:underline">Delete</button>`
+                      : `<span class="text-gray-400">View Only</span>`)
+              }
+            </td>
+          </tr>`;
+      });
+
+      renderPagination(data.length);
+    }
+
+    function renderPagination(total) {
+      pagination.innerHTML = "";
+      const totalPages = Math.ceil(total / pageSize);
+      for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i;
+        btn.className = `px-3 py-1 border rounded ${currentPage === i ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-600 border-indigo-600'} hover:bg-indigo-700 hover:text-white`;
+        btn.onclick = () => { currentPage = i; renderTable(); };
+        pagination.appendChild(btn);
+      }
+    }
+
+    function applySearchFilter(data) {
+      const term = searchInput.value.toLowerCase().trim();
+      return data.filter(r =>
+        r.name.toLowerCase().includes(term) || r.type.toLowerCase().includes(term)
+      );
+    }
+
+    function addAdmission() {
+      editingId = null;
+      document.getElementById("nameInput").value = "";
+      document.getElementById("typeInput").value = "online";
+      openModal("Add New Admission");
+    }
+
+    function viewDetails(id) {
+      editingId = null;
+      const record = admissions.find(r => r._id === id);
+      document.getElementById("nameInput").value = record.name;
+      document.getElementById("typeInput").value = record.type;
+      openModal("Admission Details", true);
+    }
+
+    function editRecord(id) {
+      editingId = id;
+      const record = admissions.find(r => r._id === id);
+      document.getElementById("nameInput").value = record.name;
+      document.getElementById("typeInput").value = record.type;
+      openModal("Edit Admission");
+    }
+
+    async function deleteRecord(id) {
+      if (confirm("Delete this record?")) {
+        try {
+          await apiFetch(`/admissions/${id}`, { method: 'DELETE' });
+          loadAdmissions();
+        } catch (err) {
+          alert(err.message);
+        }
+      }
+    }
+
+    function openModal(title, readOnly = false) {
+      document.getElementById("modalTitle").innerText = title;
+      document.getElementById("modal").classList.remove("hidden");
+      document.getElementById("nameInput").disabled = readOnly;
+      document.getElementById("typeInput").disabled = readOnly;
+      document.getElementById("modalSaveBtn").style.display = readOnly ? "none" : "inline-block";
+    }
+
+    function closeModal() {
+      document.getElementById("modal").classList.add("hidden");
+    }
+
+    async function saveModal() {
+      const name = document.getElementById("nameInput").value.trim();
+      const type = document.getElementById("typeInput").value;
+      if (!name) return alert("Name is required.");
+
+      try {
+        if (editingId) {
+          // Edit logic (if we add PUT route, for now let's just do POST as demo)
+          // await apiFetch(`/admissions/${editingId}`, { method: 'PUT', body: JSON.stringify({ name, type }) });
+          alert("Update functionality coming soon (requires PUT route)");
+        } else {
+          await apiFetch('/admissions', {
+            method: 'POST',
+            body: JSON.stringify({ name, type, submittedBy: user.username })
+          });
+        }
+        closeModal();
+        loadAdmissions();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    function renderCharts() {
+      chartsSection.classList.remove("hidden");
+      const data = applySearchFilter(getFilteredAdmissions());
+      const typeCounts = { online: 0, offline: 0 };
+      data.forEach(r => { typeCounts[r.type] = (typeCounts[r.type] || 0) + 1; });
+
+      if (pieChart) pieChart.destroy();
+      if (barChart) barChart.destroy();
+
+      pieChart = new Chart(pieChartCtx, {
+        type: 'pie',
+        data: {
+          labels: ['Online', 'Offline'],
+          datasets: [{ data: [typeCounts.online, typeCounts.offline], backgroundColor: ['#4F46E5', '#22C55E'] }]
+        }
+      });
+
+      barChart = new Chart(barChartCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Online', 'Offline'],
+          datasets: [{ label: '# of Admissions', data: [typeCounts.online, typeCounts.offline], backgroundColor: ['#4F46E5', '#22C55E'] }]
+        }
+      });
+    }
+
+    function exportCSV() {
+      const data = applySearchFilter(getFilteredAdmissions());
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Admissions");
+      XLSX.writeFile(wb, "admissions.csv");
+    }
+
+    function exportPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.text("Admission Records", 14, 16);
+      const data = applySearchFilter(getFilteredAdmissions()).map((r, i) => [i + 1, r.name, r.type]);
+      doc.autoTable({ head: [["#", "Name", "Type"]], body: data, startY: 20 });
+      doc.save("admissions.pdf");
+    }
+
+    searchInput.addEventListener("input", () => { currentPage = 1; renderTable(); });
+
+    // Initial load
+    loadAdmissions();
+  </script>
+</body>
+</html>
