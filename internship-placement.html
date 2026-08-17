@@ -49,9 +49,9 @@
   </div>
 
   <script>
-    const role = localStorage.getItem("role") || "student";
+    const role = localStorage.getItem("userRole") || localStorage.getItem("role") || "student";
     const formSection = document.getElementById("form-section");
-    if (role === "admin" || role === "faculty") formSection.classList.remove("hidden");
+    if (role === "admin" || role === "faculty" || role === "alumni") formSection.classList.remove("hidden");
 
     let records = JSON.parse(localStorage.getItem("internPlacementData")) || [];
 

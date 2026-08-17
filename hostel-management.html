@@ -58,11 +58,12 @@
   </div>
 
   <script>
-    const role = localStorage.getItem("role");
+    const role = localStorage.getItem("userRole") || localStorage.getItem("role") || "student";
     const formContainer = document.getElementById("hostel-form-container");
     const actionsHeader = document.getElementById("actions-header");
+    const canEdit = (role === "admin" || role === "faculty");
 
-    if (role === "student" || role === "faculty") {
+    if (canEdit) {
       formContainer.classList.remove("hidden");
       actionsHeader.classList.remove("hidden");
     }
@@ -81,14 +82,14 @@
         const alertClass = entry.checkout <= today ? "bg-yellow-100" : "";
 
         let row = `<tr class="border-t ${alertClass}">
-          <td class="p-2">${entry.studentId}</td>
-          <td class="p-2">${entry.room}</td>
+          <td class="p-2 font-bold">${entry.studentId}</td>
+          <td class="p-2 font-mono font-semibold">${entry.room}</td>
           <td class="p-2">${entry.checkin}</td>
           <td class="p-2">${entry.checkout}</td>`;
-        if (role === "faculty" || role === "student") {
+        if (canEdit) {
           row += `<td class="p-2">
-            <button onclick="editEntry(${index})" class="text-blue-600">Edit</button>
-            <button onclick="deleteEntry(${index})" class="text-red-600 ml-2">Delete</button>
+            <button onclick="editEntry(${index})" class="text-blue-600 font-semibold hover:underline mr-2">Edit</button>
+            <button onclick="deleteEntry(${index})" class="text-red-600 font-semibold hover:underline">Delete</button>
           </td>`;
         }
         row += `</tr>`;

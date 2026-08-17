@@ -188,15 +188,15 @@
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-      const role = localStorage.getItem("userRole");
+      const role = localStorage.getItem("userRole") || "student";
       const form = document.getElementById("result-processing-form");
 
       if (role !== "faculty" && role !== "admin") {
-        form.querySelectorAll("input, button").forEach(el => el.disabled = true);
-        const notice = document.createElement("p");
-        notice.textContent = "View-only access for current role.";
-        notice.className = "text-danger fw-bold mt-2";
-        form.appendChild(notice);
+        form.style.display = "none";
+        const notice = document.createElement("div");
+        notice.className = "alert alert-info py-2 px-3 mb-4 d-flex justify-content-between align-items-center";
+        notice.innerHTML = "<span><strong>👀 Read-Only Mode:</strong> Viewing Official Student Academic Results</span><span class='badge bg-success'>Processed</span>";
+        form.parentNode.insertBefore(notice, form);
       }
 
       loadResults();

@@ -84,12 +84,12 @@
     const formWrapper = document.getElementById("form-wrapper");
     const message = document.getElementById("form-message");
 
-    if (userRole !== "admin" && userRole !== "faculty") {
-      const overlay = document.createElement("div");
-      overlay.className = "disabled-overlay";
-      overlay.innerText = "View-only access. Switch role to Admin/Faculty to assign transportation.";
-      formWrapper.appendChild(overlay);
-      form.querySelectorAll("input, button").forEach(el => el.disabled = true);
+    if (userRole !== "admin") {
+      formWrapper.style.display = "none";
+      const notice = document.createElement("div");
+      notice.className = "alert alert-info py-2 px-3 mb-4 d-flex justify-content-between align-items-center";
+      notice.innerHTML = "<span><strong>🚌 Campus Transit Routes:</strong> View bus schedules, stops, and assigned vehicles</span><span class='badge bg-success'>Routes Active</span>";
+      formWrapper.parentNode.insertBefore(notice, formWrapper);
     }
 
     function loadTransport() {

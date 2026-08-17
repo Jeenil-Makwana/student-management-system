@@ -175,7 +175,10 @@
   let marksChart = null;
 
   // Role-based access
-  if(userRole !== "faculty" && userRole !== "student"){
+  const canEdit = (userRole === "faculty" || userRole === "admin");
+  const canView = (canEdit || userRole === "student" || userRole === "parent");
+
+  if(!canView){
     accessDeniedEl.classList.remove("hidden");
     formSection.style.display = "none";
     exportCSVBtn.disabled = true;
@@ -187,12 +190,10 @@
     return;
   }
 
-  if(userRole === "faculty") {
+  if(canEdit) {
     formSection.classList.remove("hidden");
     actionHeader.classList.remove("hidden");
-  }
-
-  if(userRole === "student") {
+  } else {
     formSection.style.display = "none";
     actionHeader.classList.add("hidden");
   }

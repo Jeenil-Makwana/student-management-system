@@ -98,11 +98,7 @@
     }
 
     function getFilteredAdmissions() {
-      return admissions.filter(r => {
-        if (role === "parent") return true;
-        if (role === "student") return r.submittedBy === user.username;
-        return true;
-      });
+      return admissions;
     }
 
     function renderTable() {

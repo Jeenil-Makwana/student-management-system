@@ -184,13 +184,17 @@
 
     // Role based controls
     function updateAccessControls() {
-      // Only faculty or admin can add/edit/delete
-      if(userRole === 'faculty' || userRole === 'admin') {
+      const formSection = document.querySelector("section[aria-label='Add or Edit Grade Form']");
+      const canEdit = (userRole === 'faculty' || userRole === 'admin');
+
+      if(canEdit) {
+        if(formSection) formSection.style.display = 'block';
         gradeNameInput.disabled = false;
         minMarksInput.disabled = false;
         maxMarksInput.disabled = false;
         submitBtn.disabled = false;
       } else {
+        if(formSection) formSection.style.display = 'none';
         gradeNameInput.disabled = true;
         minMarksInput.disabled = true;
         maxMarksInput.disabled = true;

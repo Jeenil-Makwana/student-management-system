@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Attendance Management</title>
+  <title>Attendance Management | SMS Pro</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -19,74 +19,99 @@
 
 <body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
   <nav id="main-nav"></nav>
-  <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6 dark:bg-gray-800">
-    <h2 class="text-2xl font-bold text-indigo-700 mb-6">Attendance Management</h2>
+  <div class="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-8 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <div>
+        <h2 class="text-3xl font-black text-indigo-700 dark:text-indigo-400 tracking-tight">Attendance Management</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Track student daily presence, attendance percentages, and analytics.</p>
+      </div>
+      <div id="roleBadgeContainer"></div>
+    </div>
 
-    <form id="attendance-form" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 hidden">
+    <!-- Student / Parent Read-Only Notice -->
+    <div id="readOnlyNotice" class="hidden mb-6 p-4 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-300 text-xs font-bold border border-indigo-200 dark:border-indigo-800 flex items-center justify-between">
+      <span class="flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+        <span>Viewing Student Attendance Ledger (Read-Only Mode)</span>
+      </span>
+      <span class="bg-indigo-200 dark:bg-indigo-900 px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-wider">Live Synced</span>
+    </div>
+
+    <!-- Faculty/Admin Mark Attendance Form -->
+    <form id="attendance-form" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 p-4 bg-indigo-50/50 dark:bg-gray-700/50 rounded-xl border border-indigo-100 dark:border-gray-600 hidden">
       <div>
-        <label for="student-id" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Student ID</label>
-        <input type="text" id="student-id" required
-          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600" />
+        <label for="student-id" class="block text-xs font-bold uppercase text-gray-700 dark:text-gray-200 mb-1">Student ID / Name</label>
+        <input type="text" id="student-id" placeholder="e.g. STD-2024-001 (Aarav Patel)" required
+          class="block w-full p-2.5 text-sm border border-gray-300 rounded-lg shadow-xs dark:bg-gray-800 dark:border-gray-600" />
       </div>
       <div>
-        <label for="date" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Date</label>
+        <label for="date" class="block text-xs font-bold uppercase text-gray-700 dark:text-gray-200 mb-1">Attendance Date</label>
         <input type="date" id="date" required
-          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600" />
+          class="block w-full p-2.5 text-sm border border-gray-300 rounded-lg shadow-xs dark:bg-gray-800 dark:border-gray-600" />
       </div>
       <div>
-        <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Status</label>
+        <label for="status" class="block text-xs font-bold uppercase text-gray-700 dark:text-gray-200 mb-1">Status</label>
         <select id="status" required
-          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600">
-          <option value="present">Present</option>
-          <option value="absent">Absent</option>
+          class="block w-full p-2.5 text-sm border border-gray-300 rounded-lg shadow-xs dark:bg-gray-800 dark:border-gray-600">
+          <option value="Present">Present</option>
+          <option value="Late">Late</option>
+          <option value="Absent">Absent</option>
         </select>
       </div>
       <div class="md:col-span-1 text-right flex items-end">
         <button type="submit"
-          class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition">Submit</button>
+          class="w-full bg-indigo-600 text-white font-bold text-sm px-4 py-2.5 rounded-lg hover:bg-indigo-700 transition shadow-md">Record Attendance</button>
       </div>
     </form>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-      <div class="md:col-span-1">
-        <input type="date" id="startDate" class="w-full p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600" placeholder="Start Date">
+    <!-- Filters & Export -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+      <div>
+        <input type="date" id="startDate" class="w-full p-2 text-sm border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600" placeholder="Start Date">
       </div>
-      <div class="md:col-span-1">
-        <input type="date" id="endDate" class="w-full p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600" placeholder="End Date">
+      <div>
+        <input type="date" id="endDate" class="w-full p-2 text-sm border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600" placeholder="End Date">
       </div>
-      <div class="md:col-span-1">
-        <input type="text" id="searchInput" placeholder="Search ID..." class="w-full p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600">
+      <div>
+        <input type="text" id="searchInput" placeholder="Search by Student ID or Name..." class="w-full p-2 text-sm border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600">
       </div>
-      <div class="flex gap-2 md:col-span-1 justify-end">
+      <div class="flex justify-end">
         <button onclick="exportCSV()"
-          class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Export CSV</button>
+          class="w-full bg-emerald-600 text-white font-semibold text-sm px-4 py-2 rounded-lg hover:bg-emerald-700 transition shadow-xs">Export CSV</button>
       </div>
     </div>
 
-    <div class="overflow-x-auto mb-6">
-      <table class="min-w-full bg-white border border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700" id="attendance-table">
-        <thead class="bg-gray-100 dark:bg-gray-700">
+    <!-- Attendance Records Table -->
+    <div class="overflow-x-auto mb-8 rounded-xl border border-gray-200 dark:border-gray-700">
+      <table class="min-w-full bg-white border-collapse dark:bg-gray-800 text-sm" id="attendance-table">
+        <thead class="bg-gray-50 dark:bg-gray-700/60 font-bold uppercase text-xs text-gray-700 dark:text-gray-300">
           <tr>
-            <th class="px-4 py-2 text-left">Student ID</th>
-            <th class="px-4 py-2 text-left">Date</th>
-            <th class="px-4 py-2 text-left">Status</th>
-            <th class="px-4 py-2 text-left">Actions</th>
+            <th class="px-5 py-3.5 text-left">Student ID / Name</th>
+            <th class="px-5 py-3.5 text-left">Date</th>
+            <th class="px-5 py-3.5 text-left">Status</th>
+            <th id="actionsHeader" class="px-5 py-3.5 text-right">Actions</th>
           </tr>
         </thead>
-        <tbody id="attendance-body" class="divide-y divide-gray-200 dark:divide-gray-600"></tbody>
+        <tbody id="attendance-body" class="divide-y divide-gray-200 dark:divide-gray-700"></tbody>
       </table>
     </div>
 
-    <div class="flex justify-between items-center mb-2">
-      <h3 class="text-lg font-semibold">Attendance Chart</h3>
-      <button id="toggleChartType" class="bg-indigo-500 text-white px-3 py-1 rounded hover:bg-indigo-600">Toggle Bar/Line</button>
+    <!-- Chart Section -->
+    <div class="bg-gray-50 dark:bg-gray-700/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h3 class="text-base font-bold text-gray-900 dark:text-white">Attendance Trends & Overview</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Aggregated presence and absence breakdown</p>
+        </div>
+        <button id="toggleChartType" class="bg-indigo-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition">Toggle Bar/Line</button>
+      </div>
+      <canvas id="attendanceChart" height="90"></canvas>
     </div>
-    <canvas id="attendanceChart" height="120"></canvas>
   </div>
 
   <script>
-    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
-    const role = loggedInUser?.role || "student";
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser")) || { role: "student" };
+    const role = loggedInUser?.role || localStorage.getItem("userRole") || "student";
     const user = { username: loggedInUser?.username || "guest" };
 
     const form = document.getElementById("attendance-form");
@@ -95,21 +120,45 @@
     const startDate = document.getElementById("startDate");
     const endDate = document.getElementById("endDate");
     const toggleChartTypeBtn = document.getElementById("toggleChartType");
+    const actionsHeader = document.getElementById("actionsHeader");
+    const readOnlyNotice = document.getElementById("readOnlyNotice");
+    
     let chartType = "bar";
     let attendanceRecords = [];
+    let chartInstance = null;
 
-    if (role === "faculty") {
+    const canEdit = (role === "faculty" || role === "admin");
+
+    if (canEdit) {
       form.classList.remove("hidden");
+    } else {
+      readOnlyNotice.classList.remove("hidden");
+      if (actionsHeader) actionsHeader.classList.add("hidden");
     }
 
     async function loadAttendance() {
         try {
             attendanceRecords = await apiFetch('/attendance');
-            renderTable(attendanceRecords);
-            updateChart();
+            applyFiltersAndRender();
         } catch (err) {
             console.error("Failed to load attendance:", err);
         }
+    }
+
+    function applyFiltersAndRender() {
+      const search = (searchInput.value || "").toLowerCase();
+      const start = startDate.value;
+      const end = endDate.value;
+
+      const filtered = attendanceRecords.filter(rec => {
+        const matchesSearch = rec.studentId.toLowerCase().includes(search);
+        const matchesStart = !start || rec.date >= start;
+        const matchesEnd = !end || rec.date <= end;
+        return matchesSearch && matchesStart && matchesEnd;
+      });
+
+      renderTable(filtered);
+      updateChart(filtered);
     }
 
     form.addEventListener("submit", async function (e) {
@@ -133,15 +182,28 @@
 
     function renderTable(records) {
       tbody.innerHTML = "";
+      if (records.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="px-5 py-8 text-center text-gray-400">No matching attendance records found.</td></tr>`;
+        return;
+      }
+
       records.forEach((record) => {
-        const actions = role === "faculty" ? `<td class="px-4 py-2 space-x-2">
-          <button onclick="deleteRecord('${record._id}')" class="text-red-600 hover:underline">Delete</button>
+        const statusColors = {
+          Present: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300',
+          Late: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
+          Absent: 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300'
+        };
+
+        const badgeClass = statusColors[record.status] || 'bg-gray-100 text-gray-800';
+
+        const actions = canEdit ? `<td class="px-5 py-3.5 text-right space-x-2">
+          <button onclick="deleteRecord('${record._id}')" class="text-rose-600 hover:underline font-semibold text-xs">Delete</button>
         </td>` : "";
 
-        const row = `<tr>
-          <td class="px-4 py-2">${record.studentId}</td>
-          <td class="px-4 py-2">${new Date(record.date).toLocaleDateString()}</td>
-          <td class="px-4 py-2">${record.status}</td>
+        const row = `<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+          <td class="px-5 py-3.5 font-bold text-gray-900 dark:text-white">${record.studentId}</td>
+          <td class="px-5 py-3.5 text-gray-600 dark:text-gray-300">${new Date(record.date).toLocaleDateString()}</td>
+          <td class="px-5 py-3.5"><span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeClass}">${record.status}</span></td>
           ${actions}
         </tr>`;
         tbody.insertAdjacentHTML("beforeend", row);
@@ -149,7 +211,7 @@
     }
 
     async function deleteRecord(id) {
-      if (confirm("Are you sure?")) {
+      if (confirm("Are you sure you want to delete this attendance record?")) {
         try {
             await apiFetch(`/attendance/${id}`, { method: 'DELETE' });
             loadAttendance();
@@ -159,45 +221,31 @@
       }
     }
 
-    function filterRecords() {
-      const query = searchInput.value.toLowerCase();
-      const start = startDate.value;
-      const end = endDate.value;
-
-      return attendanceRecords.filter(record => {
-        const match = record.studentId.toLowerCase().includes(query);
-        const withinDate = (!start || record.date >= start) && (!end || record.date <= end);
-        return match && withinDate;
+    function updateChart(records = attendanceRecords) {
+      const ctx = document.getElementById("attendanceChart").getContext("2d");
+      const summary = { Present: 0, Late: 0, Absent: 0 };
+      records.forEach(r => {
+        if (summary[r.status] !== undefined) summary[r.status]++;
+        else summary.Present++;
       });
-    }
 
-    searchInput.addEventListener("input", () => renderTable(filterRecords()));
-    startDate.addEventListener("change", () => { renderTable(filterRecords()); updateChart(); });
-    endDate.addEventListener("change", () => { renderTable(filterRecords()); updateChart(); });
-
-    function updateChart() {
-      const labels = [...new Set(attendanceRecords.map(r => new Date(r.date).toLocaleDateString()))].sort();
-      const presentCounts = labels.map(d => attendanceRecords.filter(r => new Date(r.date).toLocaleDateString() === d && r.status === "present").length);
-      const absentCounts = labels.map(d => attendanceRecords.filter(r => new Date(r.date).toLocaleDateString() === d && r.status === "absent").length);
-
-      const data = {
-        labels,
-        datasets: [
-          { label: 'Present', backgroundColor: 'rgb(34,197,94)', data: presentCounts },
-          { label: 'Absent', backgroundColor: 'rgb(239,68,68)', data: absentCounts }
-        ]
-      };
-
-      if (window.attendanceChartInstance) window.attendanceChartInstance.destroy();
-      window.attendanceChartInstance = new Chart(document.getElementById("attendanceChart"), {
+      if (chartInstance) chartInstance.destroy();
+      chartInstance = new Chart(ctx, {
         type: chartType,
-        data,
+        data: {
+          labels: ["Present", "Late", "Absent"],
+          datasets: [{
+            label: "Attendance Count",
+            data: [summary.Present, summary.Late, summary.Absent],
+            backgroundColor: ["#10b981", "#f59e0b", "#ef4444"],
+            borderColor: ["#059669", "#d97706", "#dc2626"],
+            borderWidth: 1
+          }]
+        },
         options: {
           responsive: true,
-          plugins: {
-            legend: { position: 'top' },
-            title: { display: true, text: 'Attendance Trends' }
-          }
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
         }
       });
     }
@@ -207,7 +255,22 @@
       updateChart();
     });
 
+    searchInput.addEventListener("input", applyFiltersAndRender);
+    startDate.addEventListener("change", applyFiltersAndRender);
+    endDate.addEventListener("change", applyFiltersAndRender);
+
+    function exportCSV() {
+      const csvRows = [["Student ID", "Date", "Status"]];
+      attendanceRecords.forEach(r => csvRows.push([r.studentId, r.date, r.status]));
+      const blob = new Blob([csvRows.map(e => e.join(",")).join("\n")], { type: "text/csv" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "attendance_records.csv";
+      a.click();
+    }
+
     loadAttendance();
   </script>
 </body>
+
 </html>

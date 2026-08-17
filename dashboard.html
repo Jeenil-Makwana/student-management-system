@@ -3,144 +3,377 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Student Management Dashboard</title>
+  <title>Student Management Dashboard | SMS Pro</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="https://unpkg.com/framer-motion@10.12.16/dist/framer-motion.umd.js"></script>
   <script src="https://unpkg.com/feather-icons"></script>
+  <script src="assets/js/core.js" defer></script>
   <style>
     .dark-mode {
       background-color: #1f2937;
       color: white;
     }
     .animate-fadeIn {
-      animation: fadeIn 0.5s ease-in-out;
+      animation: fadeIn 0.4s ease-in-out;
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
-<body class="min-h-screen transition-colors duration-300 bg-gray-100 dark:bg-gray-900 dark:text-white">
+<body class="min-h-screen transition-colors duration-300 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
 
-  <!-- Header -->
-  <header class="bg-indigo-600 text-white py-4 shadow dark:bg-indigo-700">
-    <div class="container mx-auto px-4 flex justify-between items-center">
-      <div>
-        <h1 class="text-xl font-semibold">Student Management Dashboard</h1>
-        <p id="userInfo" class="text-sm text-indigo-200 mt-1"></p>
+  <!-- Main Header -->
+  <header class="bg-gradient-to-r from-indigo-700 via-indigo-600 to-purple-700 text-white py-4 shadow-lg sticky top-0 z-50 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap justify-between items-center gap-4">
+      <div class="flex items-center space-x-3">
+        <a href="dashboard.html" class="p-2 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+        </a>
+        <div>
+          <h1 class="text-xl font-black tracking-tight flex items-center gap-2">
+            <span>SMS Pro Portal</span>
+            <span id="roleHeaderBadge" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-white/20 border border-white/30"></span>
+          </h1>
+          <p id="userInfo" class="text-xs text-indigo-100 mt-0.5 font-medium"></p>
+        </div>
       </div>
 
-      <div class="flex items-center gap-4">
+      <div class="flex items-center flex-wrap gap-3">
+        <!-- Role Switcher -->
+        <div class="flex items-center text-xs font-semibold bg-white/10 px-2.5 py-1.5 rounded-xl border border-white/20">
+          <span class="text-indigo-100 mr-1.5 hidden sm:inline">Role:</span>
+          <select id="dashboardRoleSelect" class="text-xs font-bold bg-white/20 text-white rounded-lg px-2 py-1 outline-none cursor-pointer border-none">
+            <option value="admin" class="text-gray-900">👑 Administrator</option>
+            <option value="faculty" class="text-gray-900">👩‍🏫 Faculty</option>
+            <option value="student" class="text-gray-900">🎓 Student</option>
+            <option value="parent" class="text-gray-900">👨‍👧 Parent</option>
+            <option value="alumni" class="text-gray-900">🌟 Alumni</option>
+          </select>
+        </div>
+
+        <!-- Reset Demo Data -->
+        <button onclick="window.seedAllDemoData(true)" class="inline-flex items-center gap-1.5 text-xs font-bold bg-white/15 hover:bg-white/25 border border-white/30 px-3 py-2 rounded-xl transition shadow-xs text-white" title="Reset all data back to realistic demo records">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          <span class="hidden sm:inline">Reset Demo Data</span>
+        </button>
+
         <!-- Dark Mode Toggle -->
-        <label class="inline-flex items-center cursor-pointer">
-          <span class="mr-2 text-sm">Dark Mode</span>
+        <label class="inline-flex items-center cursor-pointer bg-white/10 px-2.5 py-1.5 rounded-xl border border-white/20">
+          <span class="mr-1.5 text-xs hidden sm:inline">Dark</span>
           <input type="checkbox" id="themeToggle" class="sr-only peer">
-          <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-indigo-500 relative">
-            <div class="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 peer-checked:translate-x-full transition-transform"></div>
+          <div class="w-9 h-5 bg-white/30 rounded-full peer peer-checked:bg-emerald-400 relative transition-colors">
+            <div class="w-4 h-4 bg-white rounded-full absolute top-0.5 left-0.5 peer-checked:translate-x-4 transition-transform shadow-xs"></div>
           </div>
         </label>
 
-        <!-- Profile Dropdown -->
-        <div class="relative group">
-          <img src="https://i.pravatar.cc/40" alt="User Avatar" class="w-9 h-9 rounded-full border-2 border-white cursor-pointer">
-          <div class="absolute right-0 mt-2 w-40 bg-white text-black rounded shadow-lg hidden group-hover:block z-50 dark:bg-gray-800 dark:text-white">
-            <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Profile</a>
-            <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Settings</a>
-            <button id="logoutBtn" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Logout</button>
-          </div>
-        </div>
+        <!-- Logout Button -->
+        <button id="logoutBtn" class="bg-rose-500/80 hover:bg-rose-600 text-white text-xs font-bold px-3 py-2 rounded-xl transition flex items-center gap-1 shadow-sm" title="Logout">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          <span class="hidden md:inline">Logout</span>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="container mx-auto px-4 py-8">
-    <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
-      <input type="text" id="searchBox" placeholder="Search modules..." class="w-full md:w-1/2 px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring dark:bg-gray-800 dark:border-gray-600" />
+  <!-- Main Content Area -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Top Search & Summary Banner -->
+    <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4">
+      <div class="w-full md:w-1/2">
+        <div class="relative">
+          <input type="text" id="searchBox" placeholder="Search authorized modules by name or feature..." class="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-medium" />
+          <div class="absolute left-3.5 top-3.5 text-gray-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+        </div>
+      </div>
       
       <!-- Recent Modules -->
-      <div class="bg-white dark:bg-gray-800 p-4 rounded shadow-md w-full md:w-1/2">
-        <h3 class="text-sm font-bold mb-2 text-gray-700 dark:text-gray-300">Recent Activity</h3>
-        <ul id="recentActivity" class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+      <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 w-full md:w-1/2">
+        <div class="flex items-center justify-between mb-1.5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Recent Modules</h3>
+          <span class="text-[10px] text-indigo-500 font-semibold">Quick Access</span>
+        </div>
+        <ul id="recentActivity" class="text-xs text-gray-600 dark:text-gray-300 flex flex-wrap gap-2">
           <!-- Recent modules will appear here -->
         </ul>
       </div>
     </div>
 
-    <h2 class="text-2xl font-bold text-gray-700 dark:text-gray-200 mb-4">Available Modules</h2>
-    <div id="modulesContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <!-- Modules Header with Permissions Notice -->
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-6 pb-2 border-b border-gray-200 dark:border-gray-700">
+      <div>
+        <h2 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Authorized Services & Modules</h2>
+        <p id="moduleCountText" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-medium"></p>
+      </div>
+      <div id="rolePermissionNote" class="text-xs font-semibold px-3 py-1.5 rounded-xl border"></div>
+    </div>
+
+    <!-- Modules Grid Container -->
+    <div id="modulesContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
       <!-- Modules injected here -->
     </div>
   </main>
 
   <!-- Scripts -->
   <script>
+    // Comprehensive Module Registry with Granular Role Permissions
     const modules = [
-      { title: "Admission Section", roles: ["student", "faculty", "parent"], href: "admission-section.html", description: "Manage student admissions." },
-      { title: "Alumni Management", roles: ["faculty", "alumni"], href: "alumni-management.html", description: "Connect with alumni members." },
-      { title: "Attendance Management", roles: ["student", "faculty", "parent"], href: "attendance-management.html", description: "Track and monitor attendance." },
-      { title: "Canteen Management", roles: ["student", "faculty"], href: "canteen-management.html", description: "Manage canteen services and menus." },
-      { title: "Event Management", roles: ["student", "faculty", "parent", "alumni"], href: "event-management.html", description: "Plan and participate in events." },
-      { title: "Examination Management", roles: ["student", "faculty", "parent"], href: "examination-management.html", description: "Oversee exams and performance." },
-      { title: "Faculty Management", roles: ["faculty"], href: "faculty-management.html", description: "Manage faculty profiles and duties." },
-      { title: "Grading Section", roles: ["student", "faculty", "parent"], href: "grading-section.html", description: "View and assign grades." },
-      { title: "Hostel Management", roles: ["student", "faculty"], href: "hostel-management.html", description: "Handle hostel room assignments." },
-      { title: "ID Card & Certificate", roles: ["student", "faculty"], href: "id-card-certificate.html", description: "Generate ID cards and certificates." },
-      { title: "Internship & Placement", roles: ["student", "faculty", "alumni"], href: "internship-placement.html", description: "Manage internships and jobs." },
-      { title: "Library Management", roles: ["student", "faculty"], href: "library-management.html", description: "Access and manage library books." },
-      { title: "Marksheet Section", roles: ["student", "faculty", "parent"], href: "marksheet-section.html", description: "View and issue marksheets." },
-      { title: "Mass SMS System", roles: ["faculty"], href: "mass-sms-system.html", description: "Send bulk SMS alerts." },
-      { title: "Payment Section", roles: ["student", "faculty", "parent"], href: "payment-section.html", description: "Handle fee and tuition payments." },
-      { title: "Result Processing", roles: ["student", "faculty", "parent"], href: "result-processing.html", description: "Process academic results." },
-      { title: "Scholarship Management", roles: ["student", "faculty"], href: "scholarship-management.html", description: "Manage scholarships and applications." },
-      { title: "Student Fees Management", roles: ["student", "faculty", "parent"], href: "student-fees-management.html", description: "Manage student fee records." },
-      { title: "Time Table Section", roles: ["student", "faculty", "parent"], href: "time-table-section.html", description: "View class schedules." },
-      { title: "Transportation Management", roles: ["student", "faculty", "parent"], href: "transportation-management.html", description: "Manage school transport logistics." }
+      { 
+        title: "Attendance Management", 
+        roles: ["admin", "faculty", "student", "parent"], 
+        href: "attendance-management.html", 
+        icon: "calendar",
+        tag: { admin: "Full Access", faculty: "Mark Attendance", student: "View Records", parent: "View Attendance" },
+        description: "Log daily attendance, review absences, and view analytics charts." 
+      },
+      { 
+        title: "Examination Management", 
+        roles: ["admin", "faculty", "student", "parent"], 
+        href: "examination-management.html", 
+        icon: "file-text",
+        tag: { admin: "Full Access", faculty: "Enter Marks", student: "View Scores", parent: "View Scores" },
+        description: "Manage examination schedules, record scores, and view performance curves." 
+      },
+      { 
+        title: "Marksheet Section", 
+        roles: ["admin", "faculty", "student", "parent"], 
+        href: "marksheet-section.html", 
+        icon: "award",
+        tag: { admin: "Full Access", faculty: "Issue Marksheets", student: "View Report", parent: "View Report" },
+        description: "Official student grade marksheets and visual subject performance charts." 
+      },
+      { 
+        title: "Grading Section", 
+        roles: ["admin", "faculty", "student", "parent"], 
+        href: "grading-section.html", 
+        icon: "check-circle",
+        tag: { admin: "Configure Tiers", faculty: "Adjust Scales", student: "View Grading Scale", parent: "View Scale" },
+        description: "Institutional GPA tiers, minimum score thresholds, and grade scaling rules." 
+      },
+      { 
+        title: "Result Processing", 
+        roles: ["admin", "faculty", "student", "parent"], 
+        href: "result-processing.html", 
+        icon: "bar-chart-2",
+        tag: { admin: "Full Access", faculty: "Process Results", student: "View Results", parent: "View Results" },
+        description: "Automated pass/fail evaluation, percentage summaries, and score distributions." 
+      },
+      { 
+        title: "Time Table Section", 
+        roles: ["admin", "faculty", "student", "parent"], 
+        href: "time-table-section.html", 
+        icon: "clock",
+        tag: { admin: "Manage Schedule", faculty: "Manage Schedule", student: "Class Schedule", parent: "Class Schedule" },
+        description: "Weekly lecture schedules, lecture hall locations, and faculty assignments." 
+      },
+      { 
+        title: "Faculty Directory", 
+        roles: ["admin", "faculty"], 
+        href: "faculty-management.html", 
+        icon: "users",
+        tag: { admin: "Add/Delete Faculty", faculty: "Colleague Directory" },
+        description: "Manage university professors, academic departments, and faculty credentials." 
+      },
+      { 
+        title: "Mass SMS Broadcasts", 
+        roles: ["admin", "faculty"], 
+        href: "mass-sms-system.html", 
+        icon: "message-square",
+        tag: { admin: "Send Alerts", faculty: "Send Alerts" },
+        description: "Dispatch urgent campus alerts, exam updates, and fee reminders via SMS." 
+      },
+      { 
+        title: "Internship & Placement", 
+        roles: ["admin", "faculty", "student", "alumni"], 
+        href: "internship-placement.html", 
+        icon: "briefcase",
+        tag: { admin: "Post Drives", faculty: "Post Drives", student: "Browse Jobs", alumni: "Post Referrals" },
+        description: "Campus placement drives, corporate internships, and hiring analytics." 
+      },
+      { 
+        title: "Library Management", 
+        roles: ["admin", "faculty", "student", "alumni"], 
+        href: "library-management.html", 
+        icon: "book-open",
+        tag: { admin: "Manage Books", faculty: "Manage Inventory", student: "Search Books", alumni: "Search Catalog" },
+        description: "Catalog of textbooks, borrowing statuses, ISBN records, and search." 
+      },
+      { 
+        title: "Canteen POS Hub", 
+        roles: ["admin", "student", "faculty"], 
+        href: "canteen-management.html", 
+        icon: "coffee",
+        tag: { admin: "Manage Menu", faculty: "Menu & POS", student: "RFID Smart-Card Tap" },
+        description: "Canteen menu inventory and simulated RFID student card payments." 
+      },
+      { 
+        title: "Hostel Management", 
+        roles: ["admin", "student", "parent"], 
+        href: "hostel-management.html", 
+        icon: "home",
+        tag: { admin: "Room Allotment", student: "My Room Allotment", parent: "Hostel Status" },
+        description: "Hostel block assignments, check-in/checkout dates, and room occupancy." 
+      },
+      { 
+        title: "ID Card & Certificate", 
+        roles: ["admin", "faculty", "student"], 
+        href: "id-card-certificate.html", 
+        icon: "credit-card",
+        tag: { admin: "Generate All", faculty: "Generate Certificates", student: "Generate ID Card" },
+        description: "Generate verifiable student digital ID cards and achievement certificates." 
+      },
+      { 
+        title: "Scholarship Management", 
+        roles: ["admin", "faculty", "student"], 
+        href: "scholarship-management.html", 
+        icon: "dollar-sign",
+        tag: { admin: "Add Grants", faculty: "Add Grants", student: "Browse Financial Aid" },
+        description: "University financial aid programs, merit grants, and fellowship amounts." 
+      },
+      { 
+        title: "Student Fees Ledger", 
+        roles: ["admin", "student", "parent", "faculty"], 
+        href: "student-fees-management.html", 
+        icon: "file-text",
+        tag: { admin: "Record Receipts", faculty: "View Ledger", student: "Fee Dues", parent: "Fee Dues" },
+        description: "Tuition fee ledger, past transaction receipts, and payment deadlines." 
+      },
+      { 
+        title: "Online Payment Gateway", 
+        roles: ["admin", "student", "parent", "faculty"], 
+        href: "payment-section.html", 
+        icon: "shopping-bag",
+        tag: { admin: "Audit Gateway", faculty: "Audit Gateway", student: "Pay Tuition Online", parent: "Pay Fees Online" },
+        description: "Instant tuition payments via UPI, Net Banking, and Cards with barcodes." 
+      },
+      { 
+        title: "Transportation Routes", 
+        roles: ["admin", "student", "parent", "faculty"], 
+        href: "transportation-management.html", 
+        icon: "truck",
+        tag: { admin: "Assign Routes", faculty: "View Routes", student: "Bus Schedule", parent: "Bus Tracking" },
+        description: "Campus transit routes, bus stops, driver details, and vehicle numbers." 
+      },
+      { 
+        title: "Admission Portal", 
+        roles: ["admin", "faculty", "student", "parent"], 
+        href: "admission-section.html", 
+        icon: "user-plus",
+        tag: { admin: "Approve Applications", faculty: "Review Applications", student: "My Application", parent: "Admission Status" },
+        description: "Student admission applications, qualification records, and enrollment tracking." 
+      },
+      { 
+        title: "Alumni Network", 
+        roles: ["admin", "faculty", "alumni"], 
+        href: "alumni-management.html", 
+        icon: "globe",
+        tag: { admin: "Manage Network", faculty: "Directory", alumni: "Add My Profile" },
+        description: "Global alumni network directory, industry mentors, and company connections." 
+      }
     ];
 
-    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser")) || {
+      fullName: 'Administrator',
+      role: 'admin',
+      username: 'admin'
+    };
+
     const modulesContainer = document.getElementById("modulesContainer");
     const searchBox = document.getElementById("searchBox");
     const themeToggle = document.getElementById("themeToggle");
+    const roleSelect = document.getElementById("dashboardRoleSelect");
 
-    if (!loggedInUser || !loggedInUser.role) {
-      alert("Unauthorized access. Redirecting to login.");
-      window.location.href = "login.html";
+    const currentRole = loggedInUser.role || 'admin';
+    if (roleSelect) roleSelect.value = currentRole;
+
+    const roleBadges = {
+      admin: { name: "👑 Administrator", color: "bg-red-500/20 text-red-700 dark:text-red-300 border-red-500/40", note: "Full Institutional Control (Read, Write, Add, Edit, Delete on all modules)" },
+      faculty: { name: "👩‍🏫 Faculty", color: "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/40", note: "Academic & Teaching Access (Mark attendance, submit grades, send alerts)" },
+      student: { name: "🎓 Student", color: "bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border-indigo-500/40", note: "Student Self-Services (View attendance, pay fees, generate ID card)" },
+      parent: { name: "👨‍👧 Parent", color: "bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/40", note: "Parental Monitoring (View student progress, pay tuition fees)" },
+      alumni: { name: "🌟 Alumni", color: "bg-purple-500/20 text-purple-700 dark:text-purple-300 border-purple-500/40", note: "Alumni Network & Career Mentorship" }
+    };
+
+    const currentRoleInfo = roleBadges[currentRole] || roleBadges.admin;
+    document.getElementById("roleHeaderBadge").textContent = currentRole.toUpperCase();
+    
+    const roleNoteEl = document.getElementById("rolePermissionNote");
+    if (roleNoteEl) {
+      roleNoteEl.className = `text-xs font-bold px-3 py-1.5 rounded-xl border ${currentRoleInfo.color}`;
+      roleNoteEl.textContent = `${currentRoleInfo.name}: ${currentRoleInfo.note}`;
     }
 
     const hour = new Date().getHours();
     const greeting = hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening';
-    document.getElementById("userInfo").textContent = `${greeting}, ${loggedInUser.fullName || 'User'} (${loggedInUser.role.toUpperCase()})`;
+    document.getElementById("userInfo").textContent = `${greeting}, ${loggedInUser.fullName || 'User'}`;
+
+    // Role switcher handler
+    if (roleSelect) {
+      roleSelect.addEventListener("change", (e) => {
+        const newRole = e.target.value;
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        const matched = users.find(u => u.role === newRole) || { fullName: newRole.toUpperCase() + ' User', role: newRole, username: newRole };
+        localStorage.setItem('userRole', newRole);
+        localStorage.setItem('role', newRole);
+        localStorage.setItem('loggedInUser', JSON.stringify(matched));
+        window.location.reload();
+      });
+    }
 
     function renderModules(filter = "") {
       modulesContainer.innerHTML = "";
-      modules.forEach(mod => {
-        if (mod.roles.includes(loggedInUser.role) && mod.title.toLowerCase().includes(filter.toLowerCase())) {
-          const card = document.createElement("a");
-          card.href = mod.href;
-          card.className = "animate-fadeIn block p-5 bg-white dark:bg-gray-800 rounded-xl shadow hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition";
-
-          card.innerHTML = `
-            <h3 class="text-lg font-semibold text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
-              <svg class='w-5 h-5' fill='none' stroke='currentColor' stroke-width='2' viewBox='0 0 24 24'><path d='M5 13l4 4L19 7' /></svg>
-              ${mod.title}
-            </h3>
-            <p class="text-sm text-gray-600 dark:text-gray-300 mt-2">${mod.description}</p>
-          `;
-
-          card.addEventListener("click", () => {
-            let recent = JSON.parse(localStorage.getItem('recentModules') || '[]');
-            if (!recent.includes(mod.title)) {
-              recent.unshift(mod.title);
-              if (recent.length > 5) recent = recent.slice(0, 5);
-              localStorage.setItem('recentModules', JSON.stringify(recent));
-            }
-          });
-
-          modulesContainer.appendChild(card);
-        }
+      
+      // Filter modules authorized for current role
+      const authorizedModules = modules.filter(mod => {
+        const isAuthorized = (currentRole === 'admin') || mod.roles.includes(currentRole);
+        const matchesSearch = mod.title.toLowerCase().includes(filter.toLowerCase()) || mod.description.toLowerCase().includes(filter.toLowerCase());
+        return isAuthorized && matchesSearch;
       });
+
+      document.getElementById("moduleCountText").textContent = `Showing ${authorizedModules.length} authorized services for your ${currentRole.toUpperCase()} role.`;
+
+      if (authorizedModules.length === 0) {
+        modulesContainer.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">No matching services found for your current search.</div>`;
+        return;
+      }
+
+      authorizedModules.forEach(mod => {
+        const card = document.createElement("a");
+        card.href = mod.href;
+        card.className = "animate-fadeIn block p-5 bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md border border-gray-100 dark:border-gray-700 hover:border-indigo-500/40 dark:hover:border-indigo-500/40 transition-all transform hover:-translate-y-1 group";
+
+        const badgeText = mod.tag[currentRole] || "Authorized";
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2 mb-3">
+            <div class="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+              <i data-feather="${mod.icon || 'grid'}" class="w-5 h-5"></i>
+            </div>
+            <span class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+              ${badgeText}
+            </span>
+          </div>
+          <h3 class="text-base font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+            ${mod.title}
+          </h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5 leading-relaxed">${mod.description}</p>
+        `;
+
+        card.addEventListener("click", () => {
+          let recent = JSON.parse(localStorage.getItem('recentModules') || '[]');
+          recent = recent.filter(t => t !== mod.title);
+          recent.unshift(mod.title);
+          if (recent.length > 4) recent = recent.slice(0, 4);
+          localStorage.setItem('recentModules', JSON.stringify(recent));
+        });
+
+        modulesContainer.appendChild(card);
+      });
+
+      feather.replace();
     }
 
     function renderRecentActivity() {
@@ -148,10 +381,17 @@
       list.innerHTML = "";
       const recent = JSON.parse(localStorage.getItem('recentModules') || '[]');
       if (recent.length === 0) {
-        list.innerHTML = "<li class='text-gray-400'>No recent activity.</li>";
+        list.innerHTML = "<li class='text-gray-400 text-xs italic'>Click any module to start exploring.</li>";
       } else {
         recent.forEach(title => {
-          list.innerHTML += `<li>• ${title}</li>`;
+          const mod = modules.find(m => m.title === title);
+          const link = mod ? mod.href : '#';
+          list.innerHTML += `
+            <li>
+              <a href="${link}" class="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-2.5 py-1 rounded-lg text-xs font-semibold hover:bg-indigo-100 hover:text-indigo-700 dark:hover:bg-indigo-900/50 transition">
+                <span>• ${title}</span>
+              </a>
+            </li>`;
         });
       }
     }
@@ -175,7 +415,6 @@
 
     renderModules();
     renderRecentActivity();
-    feather.replace();
   </script>
 </body>
 </html>
