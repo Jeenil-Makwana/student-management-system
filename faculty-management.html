@@ -3,63 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="styles.css">
-  <script src="assets/js/core.js" defer></script>
+    <title>Faculty Management | SMS Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="assets/js/core.js" defer></script>
 </head>
-<body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
-  <nav id="main-nav"></nav>
-    <div class="container">
-        <!-- Faculty Management Section -->
-        <section id="faculty-management" class="section">
-            <h2>Faculty Management</h2>
-            <!-- Include faculty form or table here -->
-            <form id="faculty-form">
-                <label for="faculty-id">Faculty ID:</label>
-                <input type="text" id="faculty-id" name="faculty-id" required><br><br>
-                <input type="text" id="faculty-name" name="faculty-name" required><br><br>
-                <label for="department">Department:</label>
-                <input type="text" id="department" name="department" required><br><br>
-                <button type="submit">Add Faculty</button>
-                <label for="faculty-name">Name:</label>
+<body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100 min-h-screen">
+    <nav id="main-nav"></nav>
+    <div class="max-w-5xl mx-auto px-4 py-6">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8 mb-8 border border-gray-100 dark:border-gray-700">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                <div>
+                    <h2 class="text-3xl font-black tracking-tight text-gray-900 dark:text-white">Faculty Directory</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage professorial staff, departments, and academic credentials.</p>
+                </div>
+                <button id="toggleFormBtn" onclick="toggleForm()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold px-4 py-2 rounded-xl transition shadow-md flex items-center gap-2">
+                    <span>+ Add Faculty Member</span>
+                </button>
+            </div>
+
+            <!-- Faculty Add Form (Collapsible/Conditional) -->
+            <form id="faculty-form" class="hidden mb-8 p-6 bg-indigo-50/50 dark:bg-gray-700/50 rounded-xl border border-indigo-100 dark:border-gray-600 transition-all">
+                <h3 class="text-lg font-bold mb-4 text-indigo-900 dark:text-indigo-300">New Faculty Profile</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label for="faculty-id" class="block text-xs font-bold uppercase text-gray-600 dark:text-gray-300 mb-1">Faculty ID</label>
+                        <input type="text" id="faculty-id" placeholder="e.g. FAC-CS-103" class="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 text-sm" required>
+                    </div>
+                    <div>
+                        <label for="faculty-name" class="block text-xs font-bold uppercase text-gray-600 dark:text-gray-300 mb-1">Full Name & Title</label>
+                        <input type="text" id="faculty-name" placeholder="e.g. Dr. Rajesh Sharma" class="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 text-sm" required>
+                    </div>
+                    <div>
+                        <label for="department" class="block text-xs font-bold uppercase text-gray-600 dark:text-gray-300 mb-1">Department</label>
+                        <input type="text" id="department" placeholder="e.g. Computer Science" class="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 text-sm" required>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="toggleForm()" class="px-4 py-2 text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg">Cancel</button>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold px-6 py-2 rounded-lg shadow transition">Save Faculty</button>
+                </div>
             </form>
+
+            <!-- Search input -->
+            <div class="mb-4">
+                <input type="text" id="facultySearch" placeholder="Search by name, ID, or department..." class="w-full p-3 text-sm rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+
             <!-- Faculty records table -->
-            <table id="faculty-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Department</th>
-                        <th>Faculty ID</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Faculty records will be populated dynamically here -->
-                </tbody>
-            </table>
-        </section>
+            <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+                <table id="faculty-table" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-left text-sm">
+                    <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 font-bold uppercase text-xs">
+                        <tr>
+                            <th class="px-6 py-3.5">Faculty ID</th>
+                            <th class="px-6 py-3.5">Name</th>
+                            <th class="px-6 py-3.5">Department</th>
+                            <th class="px-6 py-3.5 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
+                        <!-- Faculty records will be populated dynamically here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
+
     <script>
+        function toggleForm() {
+            const form = document.getElementById("faculty-form");
+            form.classList.toggle("hidden");
+        }
+
+        function loadFaculty() {
+            const facultyList = JSON.parse(localStorage.getItem("facultyData")) || [];
+            const searchTerm = (document.getElementById("facultySearch")?.value || "").toLowerCase();
+            const tableBody = document.querySelector("#faculty-table tbody");
+            
+            const filtered = facultyList.filter(f => 
+                f.name.toLowerCase().includes(searchTerm) ||
+                f.id.toLowerCase().includes(searchTerm) ||
+                f.department.toLowerCase().includes(searchTerm)
+            );
+
+            tableBody.innerHTML = "";
+            if (filtered.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-gray-400">No faculty members found.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach((f, index) => {
+                const row = document.createElement("tr");
+                row.className = "hover:bg-gray-50 dark:hover:bg-gray-700/50 transition";
+                row.innerHTML = `
+                    <td class="px-6 py-4 font-mono font-bold text-indigo-600 dark:text-indigo-400">${f.id}</td>
+                    <td class="px-6 py-4 font-bold text-gray-900 dark:text-white flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                            ${f.name.split(' ').map(n=>n[0]).join('').slice(0,2)}
+                        </span>
+                        ${f.name}
+                    </td>
+                    <td class="px-6 py-4 text-gray-600 dark:text-gray-300">
+                        <span class="bg-gray-100 dark:bg-gray-700 px-2.5 py-1 rounded-full text-xs font-semibold">${f.department}</span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="deleteFaculty('${f.id}')" class="text-rose-600 dark:text-rose-400 font-semibold text-xs hover:underline">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function deleteFaculty(id) {
+            if (confirm("Are you sure you want to remove this faculty member?")) {
+                let list = JSON.parse(localStorage.getItem("facultyData")) || [];
+                list = list.filter(f => f.id !== id);
+                localStorage.setItem("facultyData", JSON.stringify(list));
+                loadFaculty();
+            }
+        }
+
         // Faculty form submission
         document.getElementById("faculty-form").addEventListener("submit", function (event) {
-                event.preventDefault(); // Prevent form submission
+            event.preventDefault();
 
-                var facultyId = document.getElementById("faculty-id").value;
-                var facultyName = document.getElementById("faculty-name").value;
-                var department = document.getElementById("department").value;
-                
-                // Create table row with form data
-                var newRow = "<tr><td>" + facultyId + "</td><td>" + facultyName + "</td><td>" + department + "</td></tr>";
-                
-                // Append new row to faculty table body
-                var tableBody = document.querySelector("#faculty-table tbody");
-                tableBody.innerHTML += newRow;
-                
-                // Clear form fields after submission
-                document.getElementById("faculty-id").value = "";
-                document.getElementById("faculty-name").value = "";
-                document.getElementById("department").value = "";
-                // Get form data
-            });
+            const facultyId = document.getElementById("faculty-id").value.trim();
+            const facultyName = document.getElementById("faculty-name").value.trim();
+            const department = document.getElementById("department").value.trim();
+
+            let list = JSON.parse(localStorage.getItem("facultyData")) || [];
+            if (list.some(f => f.id.toLowerCase() === facultyId.toLowerCase())) {
+                alert("Faculty ID already exists!");
+                return;
+            }
+
+            list.push({ id: facultyId, name: facultyName, department: department });
+            localStorage.setItem("facultyData", JSON.stringify(list));
+
+            document.getElementById("faculty-id").value = "";
+            document.getElementById("faculty-name").value = "";
+            document.getElementById("department").value = "";
+            toggleForm();
+            loadFaculty();
+        });
+
+        document.getElementById("facultySearch").addEventListener("input", loadFaculty);
+
+        document.addEventListener("DOMContentLoaded", loadFaculty);
     </script>
 </body>
 </html>

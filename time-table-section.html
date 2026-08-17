@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Time Table Management</title>
+  <title>Time Table Management | SMS Pro</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
       background-color: #f8f9fa;
-      padding: 20px;
+      padding-bottom: 40px;
     }
     .container {
       max-width: 900px;
@@ -17,12 +17,15 @@
     .disabled-overlay {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(255,255,255,0.7);
+      background: rgba(255,255,255,0.75);
       z-index: 10;
       text-align: center;
-      padding-top: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-weight: bold;
       color: #dc3545;
+      border-radius: 8px;
     }
     .message {
       margin-top: 10px;
@@ -33,39 +36,46 @@
 <body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
   <nav id="main-nav"></nav>
   <div class="container">
-    <h2 class="text-center mb-4">Time Table Management</h2>
+    <h2 class="text-center mb-4 font-bold">Academic Schedule & Time Table</h2>
 
     <div class="position-relative" id="form-wrapper">
       <form id="time-table-form" class="bg-white p-4 rounded shadow-sm border">
         <div class="row g-3">
           <div class="col-md-6">
-            <label for="day" class="form-label">Day</label>
-            <input type="text" class="form-control" id="day" placeholder="e.g., Monday" required>
+            <label for="day" class="form-label font-semibold">Day</label>
+            <select class="form-select" id="day" required>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+            </select>
           </div>
           <div class="col-md-6">
-            <label for="time" class="form-label">Time</label>
-            <input type="text" class="form-control" id="time" placeholder="e.g., 10:00 - 11:00 AM" required>
+            <label for="time" class="form-label font-semibold">Time Slot</label>
+            <input type="text" class="form-control" id="time" placeholder="e.g. 10:00 - 11:30 AM" required>
           </div>
           <div class="col-md-6">
-            <label for="subject" class="form-label">Subject</label>
-            <input type="text" class="form-control" id="subject" placeholder="e.g., Mathematics" required>
+            <label for="subject" class="form-label font-semibold">Subject / Course</label>
+            <input type="text" class="form-control" id="subject" placeholder="e.g. Data Structures" required>
           </div>
           <div class="col-md-6">
-            <label for="faculty" class="form-label">Faculty</label>
-            <input type="text" class="form-control" id="faculty" placeholder="e.g., Mr. Sharma" required>
+            <label for="faculty" class="form-label font-semibold">Instructor / Faculty</label>
+            <input type="text" class="form-control" id="faculty" placeholder="e.g. Dr. Rajesh Sharma" required>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary mt-3">Add Schedule</button>
+        <button type="submit" class="btn btn-primary mt-3 font-semibold">Add Class Schedule</button>
         <div id="form-message" class="text-success message"></div>
       </form>
     </div>
 
     <div class="input-group my-4">
-      <input type="text" class="form-control" id="search-input" placeholder="Search by Day, Subject, or Faculty">
+      <input type="text" class="form-control" id="search-input" placeholder="Search by Day, Subject, or Faculty...">
       <button class="btn btn-success" onclick="exportToCSV()">Export CSV</button>
     </div>
 
-    <table class="table table-bordered table-hover" id="time-table-table">
+    <table class="table table-bordered table-hover bg-white shadow-sm" id="time-table-table">
       <thead class="table-dark">
         <tr>
           <th onclick="sortTable(0)">Day</th>
@@ -81,7 +91,6 @@
   </div>
 
   <script>
-    // Simulated role from localStorage (admin, faculty, student)
     const userRole = localStorage.getItem("userRole") || "student";
     const form = document.getElementById("time-table-form");
     const formWrapper = document.getElementById("form-wrapper");
@@ -90,9 +99,26 @@
     if (userRole !== "admin" && userRole !== "faculty") {
       const overlay = document.createElement("div");
       overlay.className = "disabled-overlay";
-      overlay.innerText = "View-only access. Log in as admin/faculty to manage time table.";
+      overlay.innerText = "View-only access. Switch role to Admin/Faculty to modify timetable.";
       formWrapper.appendChild(overlay);
-      form.querySelectorAll("input, button").forEach(el => el.disabled = true);
+      form.querySelectorAll("input, select, button").forEach(el => el.disabled = true);
+    }
+
+    function loadTimeTable() {
+      const schedules = JSON.parse(localStorage.getItem("timeTableData")) || [];
+      const tbody = document.querySelector("#time-table-table tbody");
+      tbody.innerHTML = "";
+
+      schedules.forEach(item => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class="fw-bold">${item.day}</td>
+          <td><span class="badge bg-primary text-white">${item.time}</span></td>
+          <td class="fw-semibold">${item.subject}</td>
+          <td>${item.faculty}</td>
+        `;
+        tbody.appendChild(row);
+      });
     }
 
     form.addEventListener("submit", function (event) {
@@ -103,10 +129,11 @@
       const subject = document.getElementById("subject").value.trim();
       const faculty = document.getElementById("faculty").value.trim();
 
-      const newRow = document.createElement("tr");
-      newRow.innerHTML = `<td>${day}</td><td>${time}</td><td>${subject}</td><td>${faculty}</td>`;
-      document.querySelector("#time-table-table tbody").appendChild(newRow);
+      let list = JSON.parse(localStorage.getItem("timeTableData")) || [];
+      list.push({ day, time, subject, faculty });
+      localStorage.setItem("timeTableData", JSON.stringify(list));
 
+      loadTimeTable();
       message.textContent = "Schedule added successfully!";
       form.reset();
       setTimeout(() => { message.textContent = ""; }, 2000);
@@ -162,6 +189,8 @@
       a.download = "time_table.csv";
       a.click();
     }
+
+    document.addEventListener("DOMContentLoaded", loadTimeTable);
   </script>
 </body>
 </html>

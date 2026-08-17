@@ -3,42 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="styles.css">
-  <script src="assets/js/core.js" defer></script>
+    <title>Mass SMS System | SMS Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="assets/js/core.js" defer></script>
 </head>
-<body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
-  <nav id="main-nav"></nav>
-    <div class="container">
-        <!-- Mass SMS System Section -->
-        <section id="mass-sms" class="section">
-            <h2>Mass SMS System</h2>
-            <!-- Include SMS form here -->
-            <form id="sms-form">
-                <label for="recipient">Recipient:</label>
-                <input type="text" id="recipient" name="recipient" placeholder="Enter recipient phone number" required><br><br>
-                <label for="message">Message:</label>
-                <textarea id="message" name="message" placeholder="Enter your message" required></textarea><br><br>
-                <button type="submit">Send SMS</button>
+<body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100 min-h-screen">
+    <nav id="main-nav"></nav>
+    <div class="max-w-5xl mx-auto px-4 py-6">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8 mb-8 border border-gray-100 dark:border-gray-700">
+            <div class="flex items-center justify-between gap-4 mb-6">
+                <div>
+                    <h2 class="text-3xl font-black tracking-tight text-gray-900 dark:text-white flex items-center gap-3">
+                        <span class="p-2 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                        </span>
+                        <span>Mass SMS & Broadcast Center</span>
+                    </h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Send emergency alerts, exam updates, and fee reminders to students, parents, and faculty.</p>
+                </div>
+            </div>
+
+            <!-- SMS Composer Form -->
+            <form id="sms-form" class="mb-8 p-6 bg-gradient-to-br from-indigo-50/50 to-purple-50/50 dark:from-gray-700/50 dark:to-gray-700/30 rounded-2xl border border-indigo-100 dark:border-gray-600">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="recipient" class="block text-xs font-bold uppercase text-gray-700 dark:text-gray-300 mb-1">Target Recipient / Group</label>
+                        <input type="text" id="recipient" placeholder="e.g. +91 98201 12345 (All Parents) or CS Batch" class="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-800 text-sm font-medium" required>
+                    </div>
+                    <div>
+                        <label for="template" class="block text-xs font-bold uppercase text-gray-700 dark:text-gray-300 mb-1">Quick Template (Optional)</label>
+                        <select id="template" onchange="applyTemplate(this.value)" class="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-800 text-sm">
+                            <option value="">-- Select Pre-written Template --</option>
+                            <option value="Exam Alert: Mid-term examination timetable has been published on the student portal.">Exam Schedule Notice</option>
+                            <option value="Fee Reminder: Please ensure second semester tuition fees are paid before August 31st.">Fee Payment Reminder</option>
+                            <option value="Campus Notice: Campus will remain closed on Monday on account of public holiday.">Holiday Announcement</option>
+                            <option value="Placement Alert: Top tier IT recruitment drive commences this Friday. Check dashboard.">Recruitment Alert</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="message" class="block text-xs font-bold uppercase text-gray-700 dark:text-gray-300 mb-1">SMS Message Content (Max 160 chars)</label>
+                    <textarea id="message" rows="3" placeholder="Type your SMS message here..." class="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-800 text-sm font-medium" required></textarea>
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm px-6 py-2.5 rounded-xl shadow-lg hover:shadow-indigo-500/25 transition flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                        <span>Send Mass Broadcast</span>
+                    </button>
+                </div>
             </form>
-        </section>
+
+            <!-- SMS Dispatch History -->
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-3">Broadcast History & Delivery Status</h3>
+            <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-left text-sm" id="sms-table">
+                    <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 font-bold uppercase text-xs">
+                        <tr>
+                            <th class="px-6 py-3.5">Recipient Group</th>
+                            <th class="px-6 py-3.5">Message Content</th>
+                            <th class="px-6 py-3.5">Timestamp</th>
+                            <th class="px-6 py-3.5 text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
+
     <script>
-        // SMS form submission
-        document.getElementById("sms-form").addEventListener("submit", function (event) {
-                event.preventDefault(); // Prevent form submission
+        function applyTemplate(val) {
+            if (val) {
+                document.getElementById('message').value = val;
+            }
+        }
 
-                // Get form data
-                var recipient = document.getElementById("recipient").value;
-                var message = document.getElementById("message").value;
+        function loadSmsHistory() {
+            const list = JSON.parse(localStorage.getItem("smsHistoryData")) || [];
+            const tbody = document.querySelector("#sms-table tbody");
+            tbody.innerHTML = "";
 
-                // Simulate sending the message (for demonstration purposes)
-                alert("Message sent to " + recipient + ":\n\n" + message);
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-6 text-center text-gray-400">No broadcasts sent yet.</td></tr>`;
+                return;
+            }
 
-                // Clear form fields after submission
-                document.getElementById("recipient").value = "";
-                document.getElementById("message").value = "";
+            list.forEach(item => {
+                const row = document.createElement("tr");
+                row.className = "hover:bg-gray-50 dark:hover:bg-gray-700/50 transition";
+                row.innerHTML = `
+                    <td class="px-6 py-4 font-bold text-indigo-600 dark:text-indigo-400">${item.recipient}</td>
+                    <td class="px-6 py-4 text-gray-700 dark:text-gray-300">${item.message}</td>
+                    <td class="px-6 py-4 text-gray-400 text-xs font-mono">${item.timestamp}</td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 px-2.5 py-1 rounded-full text-xs font-bold">Delivered (100%)</span>
+                    </td>
+                `;
+                tbody.appendChild(row);
             });
+        }
+
+        document.getElementById("sms-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            const recipient = document.getElementById("recipient").value.trim();
+            const message = document.getElementById("message").value.trim();
+            const timestamp = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+            let list = JSON.parse(localStorage.getItem("smsHistoryData")) || [];
+            list.unshift({ recipient, message, timestamp });
+            localStorage.setItem("smsHistoryData", JSON.stringify(list));
+
+            alert(`✅ Message successfully dispatched to ${recipient}!`);
+            document.getElementById("sms-form").reset();
+            loadSmsHistory();
+        });
+
+        document.addEventListener("DOMContentLoaded", loadSmsHistory);
     </script>
 </body>
 </html>

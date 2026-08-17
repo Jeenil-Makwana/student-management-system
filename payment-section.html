@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Online Payment Gateway</title>
+  <title>Online Payment Gateway | SMS Pro</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <style>
-    body { background-color: #f8f9fa; padding: 20px; }
-    .barcode { margin-top: 10px; }
+    body { background-color: #f8f9fa; padding-bottom: 40px; }
+    .barcode { margin-top: 5px; }
     .hidden { display: none; }
   </style>
   <script src="assets/js/core.js" defer></script>
@@ -17,79 +17,106 @@
 <body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
   <nav id="main-nav"></nav>
 <div class="container">
-  <h2 class="text-center mb-4">Online Payment Gateway</h2>
+  <h2 class="text-center mb-4 font-bold">Online Payment Gateway & Receipts</h2>
 
   <form id="payment-form" class="border p-4 bg-white rounded shadow-sm mb-4">
     <div class="row g-3">
       <div class="col-md-4">
-        <label for="student-id" class="form-label">Student ID</label>
-        <input type="text" class="form-control" id="student-id" required>
+        <label for="student-id" class="form-label font-semibold">Student ID / Name</label>
+        <input type="text" class="form-control" id="student-id" placeholder="e.g. STD-2024-001" required>
       </div>
       <div class="col-md-4">
-        <label for="amount" class="form-label">Amount (₹)</label>
-        <input type="number" class="form-control" id="amount" required>
+        <label for="amount" class="form-label font-semibold">Payment Amount (₹)</label>
+        <input type="number" class="form-control" id="amount" placeholder="e.g. 65000" required>
       </div>
       <div class="col-md-4">
-        <label for="payment-method" class="form-label">Payment Method</label>
+        <label for="payment-method" class="form-label font-semibold">Payment Method</label>
         <select id="payment-method" class="form-select" required>
+          <option value="UPI">UPI (GooglePay / PhonePe / Paytm)</option>
+          <option value="Net Banking">Net Banking</option>
           <option value="Credit Card">Credit Card</option>
           <option value="Debit Card">Debit Card</option>
-          <option value="Net Banking">Net Banking</option>
-          <option value="UPI">UPI</option>
         </select>
       </div>
     </div>
-    <button type="submit" class="btn btn-success mt-3">Make Payment</button>
-    <svg id="barcode" class="barcode hidden"></svg>
+    <button type="submit" class="btn btn-success mt-3 font-semibold">Submit Payment</button>
   </form>
 
-  <input type="text" class="form-control mb-3" id="search-input" placeholder="Search by Student ID or Method">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <input type="text" class="form-control w-50" id="search-input" placeholder="Search by Student ID or Method...">
+    <button class="btn btn-primary" onclick="exportToCSV()">Export to CSV</button>
+  </div>
 
-  <table class="table table-bordered table-striped" id="payment-table">
+  <table class="table table-bordered table-striped table-hover bg-white shadow-sm" id="payment-table">
     <thead class="table-dark">
       <tr>
         <th onclick="sortTable(0)">Student ID</th>
         <th onclick="sortTable(1)">Amount (₹)</th>
-        <th onclick="sortTable(2)">Method</th>
-        <th>Barcode Ref</th>
+        <th onclick="sortTable(2)">Payment Method</th>
+        <th>Digital Barcode Reference</th>
       </tr>
     </thead>
     <tbody></tbody>
   </table>
 
-  <button class="btn btn-primary mb-3" onclick="exportToCSV()">Export to CSV</button>
-
-  <canvas id="paymentChart" height="100"></canvas>
+  <div class="bg-white p-4 rounded shadow-sm mt-4">
+    <h4 class="text-center font-bold mb-3">Payment Distribution by Channel</h4>
+    <canvas id="paymentChart" height="90"></canvas>
+  </div>
 </div>
 
 <script>
   let chartInstance = null;
   const paymentData = {};
 
+  function loadPayments() {
+    const list = JSON.parse(localStorage.getItem("paymentTransactions")) || [];
+    const tableBody = document.querySelector("#payment-table tbody");
+    tableBody.innerHTML = "";
+
+    // Reset chart data
+    Object.keys(paymentData).forEach(k => delete paymentData[k]);
+
+    list.forEach(tx => {
+      const barcodeValue = tx.barcode || `REF-${Date.now()}`;
+      const newRow = tableBody.insertRow();
+      newRow.innerHTML = `
+        <td class="font-monospace fw-bold">${tx.studentId}</td>
+        <td class="text-success fw-bold">₹${parseFloat(tx.amount).toLocaleString('en-IN')}</td>
+        <td><span class="badge bg-info text-dark">${tx.method}</span></td>
+        <td><svg class="barcode" id="barcode-${barcodeValue.replace(/[^a-zA-Z0-9]/g, '')}"></svg></td>
+      `;
+
+      try {
+        JsBarcode(`#barcode-${barcodeValue.replace(/[^a-zA-Z0-9]/g, '')}`, barcodeValue, {
+          format: "CODE128",
+          width: 1.5,
+          height: 25,
+          displayValue: true,
+          fontSize: 10
+        });
+      } catch (e) {
+        console.error(e);
+      }
+
+      paymentData[tx.method] = (paymentData[tx.method] || 0) + parseFloat(tx.amount);
+    });
+
+    updateChart();
+  }
+
   document.getElementById("payment-form").addEventListener("submit", function (e) {
     e.preventDefault();
     const studentId = document.getElementById("student-id").value.trim();
     const amount = parseFloat(document.getElementById("amount").value).toFixed(2);
     const method = document.getElementById("payment-method").value;
-    const barcodeValue = `REF-${Date.now()}`;
+    const barcode = `REF-${Date.now()}`;
 
-    const tableBody = document.querySelector("#payment-table tbody");
-    const newRow = tableBody.insertRow();
-    newRow.innerHTML = `
-      <td>${studentId}</td>
-      <td>${amount}</td>
-      <td>${method}</td>
-      <td><svg class="barcode" id="barcode-${barcodeValue}"></svg></td>
-    `;
-    JsBarcode(`#barcode-${barcodeValue}`, barcodeValue, {
-      format: "CODE128",
-      width: 2,
-      height: 30,
-      displayValue: false
-    });
+    let list = JSON.parse(localStorage.getItem("paymentTransactions")) || [];
+    list.push({ studentId, amount, method, barcode });
+    localStorage.setItem("paymentTransactions", JSON.stringify(list));
 
-    paymentData[method] = (paymentData[method] || 0) + parseFloat(amount);
-    updateChart();
+    loadPayments();
     this.reset();
   });
 
@@ -148,7 +175,9 @@
   }
 
   function updateChart() {
-    const ctx = document.getElementById('paymentChart').getContext('2d');
+    const canvas = document.getElementById('paymentChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
     const labels = Object.keys(paymentData);
     const data = Object.values(paymentData);
 
@@ -158,32 +187,22 @@
       data: {
         labels,
         datasets: [{
-          label: 'Total Amount (₹) by Method',
+          label: 'Total Collected (₹)',
           data,
-          backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#dc3545']
+          backgroundColor: ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
         }]
       },
       options: {
         responsive: true,
         plugins: {
           legend: { display: false },
-          title: { display: true, text: 'Payment Method Summary' }
+          title: { display: true, text: 'Revenue Summary by Payment Method' }
         }
       }
     });
   }
 
-  // Role-based access
-  document.addEventListener("DOMContentLoaded", function () {
-    const role = localStorage.getItem("userRole"); // 'admin', 'faculty', 'student'
-    if (role !== "parent" && role !== "faculty" && role !== "student") {
-      document.querySelectorAll("#payment-form input, #payment-form select, #payment-form button").forEach(el => el.disabled = true);
-      const notice = document.createElement("p");
-      notice.textContent = "You have view-only access.";
-      notice.style.color = "red";
-      document.getElementById("payment-form").appendChild(notice);
-    }
-  });
+  document.addEventListener("DOMContentLoaded", loadPayments);
 </script>
 </body>
 </html>
