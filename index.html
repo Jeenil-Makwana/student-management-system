@@ -3,56 +3,430 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Welcome | Student Management System</title>
+  <title>SMS Pro | Next-Gen University & Campus Management Platform</title>
+  
+  <!-- Modern Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  
+  <!-- Tailwind CSS -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  
+  <!-- Core Data Seeder -->
   <script src="assets/js/core.js"></script>
+
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
+    * {
+      font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* Subtle Animated Mesh Gradient */
+    .hero-mesh-bg {
+      background-color: #0b0f19;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.25) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.22) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(236, 72, 153, 0.18) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.2) 0px, transparent 50%);
+    }
+
+    /* Grid pattern overlay */
+    .grid-overlay {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    /* Premium Glassmorphism Card */
+    .glass-panel {
+      background: rgba(17, 24, 39, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .role-card {
+      background: rgba(31, 41, 55, 0.6);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .role-card:hover {
+      transform: translateY(-6px) scale(1.015);
+      border-color: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.7), 0 0 25px 2px var(--card-glow, rgba(99, 102, 241, 0.3));
+    }
+
+    /* Gradient Text */
+    .gradient-text-hero {
+      background: linear-gradient(135deg, #ffffff 30%, #c7d2fe 70%, #93c5fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .gradient-badge {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+      border: 1px solid rgba(168, 85, 247, 0.4);
+    }
+
+    /* Floating Orbs Animation */
+    @keyframes float-slow {
+      0%, 100% { transform: translate(0px, 0px) scale(1); }
+      50% { transform: translate(20px, -20px) scale(1.05); }
+    }
+    .animate-float-slow {
+      animation: float-slow 10s ease-in-out infinite;
     }
   </style>
 </head>
 
-<body class="bg-gradient-to-br from-indigo-700 via-purple-700 to-indigo-900 min-h-screen flex items-center justify-center px-4 py-8">
-  <div class="bg-white/95 backdrop-blur-lg shadow-2xl rounded-2xl p-8 sm:p-10 max-w-3xl w-full text-center border border-white/40">
-    <div class="inline-flex p-3 bg-indigo-100 text-indigo-700 rounded-2xl mb-4 shadow-sm">
-      <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
-    </div>
-    <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-3 tracking-tight">Student Management System</h1>
-    <p class="text-gray-600 mb-8 text-base sm:text-lg">Select your portal role to access authorized campus services & data</p>
-
-    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
-      <button onclick="selectRole('admin')" class="bg-red-50 hover:bg-red-100 border border-red-200 transition-all transform hover:-translate-y-0.5 p-5 rounded-xl shadow-xs text-red-800 font-bold text-base flex flex-col items-center gap-2">
-        <span class="text-2xl">👑</span>
-        <span>Administrator</span>
-      </button>
-      <button onclick="selectRole('faculty')" class="bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-all transform hover:-translate-y-0.5 p-5 rounded-xl shadow-xs text-emerald-800 font-bold text-base flex flex-col items-center gap-2">
-        <span class="text-2xl">👩‍🏫</span>
-        <span>Faculty</span>
-      </button>
-      <button onclick="selectRole('student')" class="bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-all transform hover:-translate-y-0.5 p-5 rounded-xl shadow-xs text-indigo-800 font-bold text-base flex flex-col items-center gap-2">
-        <span class="text-2xl">🎓</span>
-        <span>Student</span>
-      </button>
-      <button onclick="selectRole('parent')" class="bg-amber-50 hover:bg-amber-100 border border-amber-200 transition-all transform hover:-translate-y-0.5 p-5 rounded-xl shadow-xs text-amber-800 font-bold text-base flex flex-col items-center gap-2">
-        <span class="text-2xl">👨‍👧</span>
-        <span>Parent</span>
-      </button>
-      <button onclick="selectRole('alumni')" class="bg-purple-50 hover:bg-purple-100 border border-purple-200 transition-all transform hover:-translate-y-0.5 p-5 rounded-xl shadow-xs text-purple-800 font-bold text-base flex flex-col items-center gap-2 col-span-2 sm:col-span-1">
-        <span class="text-2xl">🌟</span>
-        <span>Alumni</span>
-      </button>
-    </div>
-
-    <p class="text-xs text-gray-400">&copy; 2026 Student Management System • Pro Edition</p>
+<body class="hero-mesh-bg text-gray-100 min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white relative overflow-x-hidden">
+  
+  <!-- Glowing Background Orbs -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div class="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/20 rounded-full filter blur-3xl animate-float-slow"></div>
+    <div class="absolute top-1/3 -right-40 w-96 h-96 bg-purple-600/20 rounded-full filter blur-3xl animate-float-slow" style="animation-delay: 3s;"></div>
+    <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-blue-600/20 rounded-full filter blur-3xl animate-float-slow" style="animation-delay: 6s;"></div>
   </div>
 
+  <!-- Grid Texture Overlay -->
+  <div class="fixed inset-0 grid-overlay opacity-30 pointer-events-none z-0"></div>
+
+  <!-- Top Navigation Bar -->
+  <header class="relative z-20 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between border-b border-white/10">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/30 ring-1 ring-white/20">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path d="M12 14l9-5-9-5-9 5 9 5z"/>
+          <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+        </svg>
+      </div>
+      <div>
+        <span class="text-xl font-extrabold tracking-tight text-white flex items-center gap-1.5">
+          SMS<span class="text-indigo-400">Pro</span>
+          <span class="text-[10px] uppercase font-bold tracking-widest bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-500/30">Enterprise</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Right status & quick actions -->
+    <div class="flex items-center gap-3 sm:gap-4">
+      <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Systems 99.9% Operational</span>
+      </div>
+
+      <a href="login.html" class="inline-flex items-center gap-1.5 text-xs font-bold text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-xl transition-all shadow-sm backdrop-blur-md">
+        <span>Standard Login</span>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero & Role Selection Container -->
+  <main class="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 sm:py-14 flex-grow flex flex-col justify-center">
+    
+    <!-- Hero Heading Section -->
+    <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full gradient-badge text-indigo-300 text-xs font-bold tracking-wide uppercase mb-6 shadow-sm">
+        <span class="text-sm">✨</span>
+        <span>Next-Gen University Operating Platform</span>
+      </div>
+      
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight gradient-text-hero leading-tight mb-5">
+        One Intelligent Portal for the Entire Campus
+      </h1>
+      
+      <p class="text-base sm:text-lg text-gray-400 font-normal max-w-2xl mx-auto leading-relaxed">
+        Choose your persona to launch tailored dashboards with granular permissions, automated academic workflows, and live synced data.
+      </p>
+    </div>
+
+    <!-- 5 Ultra-Premium Role Persona Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6 mb-12">
+      
+      <!-- 1. Administrator -->
+      <div onclick="launchPortal('admin')" style="--card-glow: rgba(239, 68, 68, 0.35);" class="role-card rounded-2xl p-6 cursor-pointer flex flex-col justify-between group relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-28 h-28 bg-red-500/10 rounded-full filter blur-2xl group-hover:bg-red-500/20 transition-all"></div>
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform">
+              👑
+            </div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-red-400 bg-red-500/10 px-2.5 py-1 rounded-lg border border-red-500/20">
+              19 Modules Full Access
+            </span>
+          </div>
+
+          <h3 class="text-xl font-black text-white group-hover:text-red-300 transition-colors mb-1.5">
+            System Administrator
+          </h3>
+          <p class="text-xs text-gray-400 mb-4 leading-relaxed">
+            Full governance suite: faculty roster control, admissions registry, institutional finances, audit logs & seeder.
+          </p>
+
+          <div class="space-y-1.5 mb-6 text-xs text-gray-300 font-medium">
+            <div class="flex items-center gap-2 text-gray-300">
+              <svg class="w-3.5 h-3.5 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+              <span>Faculty Directory & Staff Assignment</span>
+            </div>
+            <div class="flex items-center gap-2 text-gray-300">
+              <svg class="w-3.5 h-3.5 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+              <span>Scholarships & Complete Fee Ledgers</span>
+            </div>
+            <div class="flex items-center gap-2 text-gray-300">
+              <svg class="w-3.5 h-3.5 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+              <span>Campus SMS Broadcast Hub</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-red-600/30 transition-all group-hover:shadow-red-600/50">
+          <span>Enter as Admin</span>
+          <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </div>
+
+      <!-- 2. Faculty -->
+      <div onclick="launchPortal('faculty')" style="--card-glow: rgba(16, 185, 129, 0.35);" class="role-card rounded-2xl p-6 cursor-pointer flex flex-col justify-between group relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-28 h-28 bg-emerald-500/10 rounded-full filter blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform">
+              👩‍🏫
+            </div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+              12 Academic Modules
+            </span>
+          </div>
+
+          <h3 class="text-xl font-black text-white group-hover:text-emerald-300 transition-colors mb-1.5">
+            Faculty & Professor
+          </h3>
+          <p class="text-xs text-gray-400 mb-4 leading-relaxed">
+            Instructional workspace: daily attendance logging, grading scales, examination results & weekly schedules.
+          </p>
+
+          <div class="space-y-1.5 mb-6 text-xs text-gray-300 font-medium">
+            <div class="flex items-center gap-2 text-gray-300">
+              <svg class="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+              <span>Take & Modify Student Attendance</span>
+            </div>
+            <div class="flex items-center gap-2 text-gray-300">
+              <svg class="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+              <span>Manage Marks, Grades & Results</span>
+            </div>
+            <div class="flex items-center gap-2 text-gray-300">
+              <svg class="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+              <span>Publish Course Lecture Timetables</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all group-hover:shadow-emerald-600/50">
+          <span>Enter as Faculty</span>
+          <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </div>
+
+      <!-- 3. Student -->
+      <div onclick="launchPortal('student')" style="--card-glow: rgba(99, 102, 241, 0.35);" class="role-card rounded-2xl p-6 cursor-pointer flex flex-col justify-between group relative overflow-hidden border-indigo-500/30 ring-1 ring-indigo-500/30">
+        <div class="absolute top-0 right-0 w-28 h-28 bg-indigo-500/15 rounded-full filter blur-2xl group-hover:bg-indigo-500/25 transition-all"></div>
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform">
+              🎓
+            </div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-300 bg-indigo-500/20 px-2.5 py-1 rounded-lg border border-indigo-500/30">
+              16 Student Portals
+            </span>
+          </div>
+
+          <h3 class="text-xl font-black text-white group-hover:text-indigo-300 transition-colors mb-1.5">
+            Student Scholar
+          </h3>
+          <p class="text-xs text-gray-400 mb-4 leading-relaxed">
+            All-in-one student portal: view attendance, generate QR ID cards, pay tuition fees, library & canteen POS.
+          </p>
+
+          <div class="space-y-1.5 mb-6 text-xs text-gray-300 font-medium">
+            <div class="flex items-center gap-2 text-gray-300">
+              <svg class="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+              <span>Instant QR ID Card & Certificates</span>
+            </div>
+            <div class="flex items-center gap-2 text-gray-300">
+              <svg class="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+              <span>Live Attendance Analytics & Grades</span>
+            </div>
+            <div class="flex items-center gap-2 text-gray-300">
+              <svg class="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+              <span>Canteen Smart POS & Online Fee Pay</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30 transition-all group-hover:shadow-indigo-600/50">
+          <span>Enter as Student</span>
+          <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </div>
+
+      <!-- 4. Parent -->
+      <div onclick="launchPortal('parent')" style="--card-glow: rgba(245, 158, 11, 0.35);" class="role-card rounded-2xl p-6 cursor-pointer flex flex-col justify-between group relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-28 h-28 bg-amber-500/10 rounded-full filter blur-2xl group-hover:bg-amber-500/20 transition-all"></div>
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform">
+              👨‍👧
+            </div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">
+              10 Monitoring Modules
+            </span>
+          </div>
+
+          <h3 class="text-xl font-black text-white group-hover:text-amber-300 transition-colors mb-1.5">
+            Parent & Guardian
+          </h3>
+          <p class="text-xs text-gray-400 mb-4 leading-relaxed">
+            Direct family monitoring: track student daily attendance trends, examination marksheets, transit & fee payments.
+          </p>
+
+          <div class="space-y-1.5 mb-6 text-xs text-gray-300 font-medium">
+            <div class="flex items-center gap-2 text-gray-300">
+              <svg class="w-3.5 h-3.5 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+              <span>Attendance Tracking & Absence Alerts</span>
+            </div>
+            <div class="flex items-center gap-2 text-gray-300">
+              <svg class="w-3.5 h-3.5 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+              <span>View Semester Marksheet Breakdowns</span>
+            </div>
+            <div class="flex items-center gap-2 text-gray-300">
+              <svg class="w-3.5 h-3.5 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+              <span>Live Campus Transit & Bus Route Status</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-amber-600/30 transition-all group-hover:shadow-amber-600/50">
+          <span>Enter as Parent</span>
+          <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </div>
+
+      <!-- 5. Alumni -->
+      <div onclick="launchPortal('alumni')" style="--card-glow: rgba(168, 85, 247, 0.35);" class="role-card rounded-2xl p-6 cursor-pointer flex flex-col justify-between group relative overflow-hidden md:col-span-2 lg:col-span-2">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full filter blur-2xl group-hover:bg-purple-500/20 transition-all"></div>
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform">
+              🌟
+            </div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded-lg border border-purple-500/20">
+              Global Alumni Network
+            </span>
+          </div>
+
+          <h3 class="text-xl font-black text-white group-hover:text-purple-300 transition-colors mb-1.5">
+            Alumni & Industry Network
+          </h3>
+          <p class="text-xs text-gray-400 mb-4 leading-relaxed">
+            Graduate community hub: post job placement opportunities, connect with graduating students, and join leadership galas.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6 text-xs text-gray-300 font-medium">
+            <div class="flex items-center gap-2">
+              <svg class="w-3.5 h-3.5 text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+              <span>Post Corporate Placement & Internship Tracks</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <svg class="w-3.5 h-3.5 text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+              <span>Search Verified Alumni Directory</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <svg class="w-3.5 h-3.5 text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+              <span>Attend Annual HackTech & Cultural Fests</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <svg class="w-3.5 h-3.5 text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+              <span>Sponsor Scholarships & Endowment Grants</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-purple-600/30 transition-all group-hover:shadow-purple-600/50">
+          <span>Enter as Alumni</span>
+          <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Live Campus Platform Highlights & Metrics Bar -->
+    <div class="glass-panel rounded-2xl p-6 sm:p-8">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center divide-y sm:divide-y-0 sm:divide-x divide-white/10">
+        <div class="pt-4 sm:pt-0">
+          <div class="text-3xl sm:text-4xl font-black text-indigo-400 tracking-tight">19+</div>
+          <div class="text-xs uppercase font-bold text-gray-400 mt-1 tracking-wider">Active Modules</div>
+        </div>
+        <div class="pt-4 sm:pt-0">
+          <div class="text-3xl sm:text-4xl font-black text-purple-400 tracking-tight">2,450+</div>
+          <div class="text-xs uppercase font-bold text-gray-400 mt-1 tracking-wider">Enrolled Scholars</div>
+        </div>
+        <div class="pt-4 sm:pt-0">
+          <div class="text-3xl sm:text-4xl font-black text-emerald-400 tracking-tight">99.8%</div>
+          <div class="text-xs uppercase font-bold text-gray-400 mt-1 tracking-wider">Attendance Rate</div>
+        </div>
+        <div class="pt-4 sm:pt-0">
+          <div class="text-3xl sm:text-4xl font-black text-amber-400 tracking-tight">Zero Config</div>
+          <div class="text-xs uppercase font-bold text-gray-400 mt-1 tracking-wider">Pre-Seeded Mock Data</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Clean Minimalist Footer -->
+  <footer class="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10 text-xs text-gray-400 font-medium">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+      <span>&copy; 2026 Student Management System (SMS Pro). All rights reserved.</span>
+    </div>
+    <div class="flex items-center gap-5">
+      <button onclick="window.seedAllDemoData(true)" class="hover:text-indigo-400 transition underline font-bold">
+        🔄 Re-Seed Demo Datasets
+      </button>
+      <a href="dashboard.html" class="hover:text-indigo-400 transition">Dashboard Hub</a>
+      <a href="login.html" class="hover:text-indigo-400 transition">Sign In Portal</a>
+    </div>
+  </footer>
+
   <script>
-    function selectRole(role) {
+    function launchPortal(role) {
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const matchedUser = users.find(u => u.role === role) || {
+        fullName: role.charAt(0).toUpperCase() + role.slice(1) + ' User',
+        role: role,
+        username: role
+      };
+
+      // Set complete auth session
       localStorage.setItem('userRole', role);
       localStorage.setItem('role', role);
-      window.location.href = "login.html";
+      localStorage.setItem('loggedInUser', JSON.stringify(matchedUser));
+      localStorage.setItem('authenticated', 'true');
+      localStorage.setItem('token', 'mock-jwt-token-' + role);
+
+      if (window.showGlobalToast) {
+        window.showGlobalToast(`🚀 Launching ${role.toUpperCase()} Workspace...`);
+      }
+
+      // Smooth direct entry to Dashboard
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 250);
     }
   </script>
 </body>
