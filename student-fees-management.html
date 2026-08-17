@@ -30,8 +30,7 @@
     .message {
       margin-top: 10px;
     }
-  </style>
-  <script src="assets/js/core.js" defer></script>
+  <script src="assets/js/core.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
   <nav id="main-nav"></nav>
@@ -85,7 +84,11 @@
     }
 
     function loadFees() {
-      const fees = JSON.parse(localStorage.getItem("studentFeesData")) || [];
+      let fees = JSON.parse(localStorage.getItem("studentFeesData")) || [];
+      if (fees.length === 0 && window.seedAllDemoData) {
+        window.seedAllDemoData(false);
+        fees = JSON.parse(localStorage.getItem("studentFeesData")) || [];
+      }
       const tbody = document.querySelector("#fees-table tbody");
       tbody.innerHTML = "";
 

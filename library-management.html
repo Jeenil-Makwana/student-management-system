@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Library Management</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="assets/js/core.js" defer></script>
+  <script src="assets/js/core.js"></script>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
   <nav id="main-nav"></nav>
@@ -42,7 +42,11 @@
 
     async function loadBooks() {
       try {
-        const books = await apiFetch('/library');
+        let books = (window.apiFetch ? await apiFetch('/library') : null) || JSON.parse(localStorage.getItem('/library') || '[]');
+        if (books.length === 0 && window.seedAllDemoData) {
+          window.seedAllDemoData(false);
+          books = JSON.parse(localStorage.getItem('/library') || '[]');
+        }
         bookList.innerHTML = books.map(book => `
           <tr class="border-b dark:border-gray-700">
             <td class="px-4 py-2 font-bold">${book.bookTitle}</td>

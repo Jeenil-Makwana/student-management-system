@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Canteen Management | SMS Pro</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="assets/js/core.js" defer></script>
+  <script src="assets/js/core.js"></script>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
   <nav id="main-nav"></nav>
@@ -69,7 +69,11 @@
 
     async function loadMenu() {
       try {
-        const items = await apiFetch('/canteen');
+        let items = (window.apiFetch ? await apiFetch('/canteen') : null) || JSON.parse(localStorage.getItem('/canteen') || '[]');
+        if (items.length === 0 && window.seedAllDemoData) {
+          window.seedAllDemoData(false);
+          items = JSON.parse(localStorage.getItem('/canteen') || '[]');
+        }
         menuList.innerHTML = items.map(item => `
           <div class="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700/60 border border-gray-100 dark:border-gray-600/50 rounded-2xl">
             <div>

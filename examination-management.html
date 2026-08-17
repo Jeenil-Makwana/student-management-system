@@ -38,7 +38,7 @@
       100% {opacity: 0; transform: translateX(50%);}
     }
   </style>
-  <script src="assets/js/core.js" defer></script>
+  <script src="assets/js/core.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
   <nav id="main-nav"></nav>
@@ -171,6 +171,10 @@
 
   // State
   let exams = JSON.parse(localStorage.getItem("examsData") || "[]");
+  if (exams.length === 0 && window.seedAllDemoData) {
+    window.seedAllDemoData(false);
+    exams = JSON.parse(localStorage.getItem("examsData") || "[]");
+  }
   let editingId = null;
   let marksChart = null;
 

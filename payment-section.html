@@ -12,7 +12,7 @@
     .barcode { margin-top: 5px; }
     .hidden { display: none; }
   </style>
-  <script src="assets/js/core.js" defer></script>
+  <script src="assets/js/core.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
   <nav id="main-nav"></nav>
@@ -70,7 +70,11 @@
   const paymentData = {};
 
   function loadPayments() {
-    const list = JSON.parse(localStorage.getItem("paymentTransactions")) || [];
+    let list = JSON.parse(localStorage.getItem("paymentTransactions")) || [];
+    if (list.length === 0 && window.seedAllDemoData) {
+      window.seedAllDemoData(false);
+      list = JSON.parse(localStorage.getItem("paymentTransactions")) || [];
+    }
     const tableBody = document.querySelector("#payment-table tbody");
     tableBody.innerHTML = "";
 

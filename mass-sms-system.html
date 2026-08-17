@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mass SMS System | SMS Pro</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script src="assets/js/core.js" defer></script>
+    <script src="assets/js/core.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100 min-h-screen">
     <nav id="main-nav"></nav>
@@ -81,7 +81,11 @@
         }
 
         function loadSmsHistory() {
-            const list = JSON.parse(localStorage.getItem("smsHistoryData")) || [];
+            let list = JSON.parse(localStorage.getItem("smsHistoryData")) || [];
+            if (list.length === 0 && window.seedAllDemoData) {
+                window.seedAllDemoData(false);
+                list = JSON.parse(localStorage.getItem("smsHistoryData")) || [];
+            }
             const tbody = document.querySelector("#sms-table tbody");
             tbody.innerHTML = "";
 

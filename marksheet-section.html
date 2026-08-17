@@ -12,7 +12,7 @@
         .table thead th { cursor: pointer; }
         #chart_div { margin-top: 30px; }
     </style>
-    <script src="assets/js/core.js" defer></script>
+    <script src="assets/js/core.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
     <nav id="main-nav"></nav>
@@ -64,7 +64,11 @@
         let isGoogleChartsLoaded = false;
 
         function loadMarksheets() {
-            const marksheets = JSON.parse(localStorage.getItem("marksheetData")) || [];
+            let marksheets = JSON.parse(localStorage.getItem("marksheetData")) || [];
+            if (marksheets.length === 0 && window.seedAllDemoData) {
+                window.seedAllDemoData(false);
+                marksheets = JSON.parse(localStorage.getItem("marksheetData")) || [];
+            }
             const tableBody = document.querySelector("#marksheet-table tbody");
             tableBody.innerHTML = "";
             chartData = [['Subject', 'Marks Obtained']];

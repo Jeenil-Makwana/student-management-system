@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-  <script src="assets/js/core.js" defer></script>
+  <script src="assets/js/core.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
   <nav id="main-nav"></nav>
@@ -170,9 +170,12 @@
     function saveGrades() {
       localStorage.setItem('examinationGradesData', JSON.stringify(gradesData));
     }
-    // Load from localStorage
     function loadGrades() {
-      const stored = localStorage.getItem('examinationGradesData');
+      let stored = localStorage.getItem('examinationGradesData');
+      if (!stored || stored === '[]' || stored === 'null') {
+        if (window.seedAllDemoData) window.seedAllDemoData(false);
+        stored = localStorage.getItem('examinationGradesData');
+      }
       if(stored) {
         try {
           gradesData = JSON.parse(stored);

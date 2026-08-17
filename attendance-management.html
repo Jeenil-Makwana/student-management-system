@@ -14,7 +14,7 @@
       font-family: 'Inter', sans-serif;
     }
   </style>
-  <script src="assets/js/core.js" defer></script>
+  <script src="assets/js/core.js"></script>
 </head>
 
 <body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
@@ -138,10 +138,16 @@
 
     async function loadAttendance() {
         try {
-            attendanceRecords = await apiFetch('/attendance');
+            attendanceRecords = (window.apiFetch ? await apiFetch('/attendance') : null) || JSON.parse(localStorage.getItem('/attendance') || '[]');
+            if (attendanceRecords.length === 0 && window.seedAllDemoData) {
+                window.seedAllDemoData(false);
+                attendanceRecords = JSON.parse(localStorage.getItem('/attendance') || '[]');
+            }
             applyFiltersAndRender();
         } catch (err) {
             console.error("Failed to load attendance:", err);
+            attendanceRecords = JSON.parse(localStorage.getItem('/attendance') || '[]');
+            applyFiltersAndRender();
         }
     }
 

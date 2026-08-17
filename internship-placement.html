@@ -9,7 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="assets/js/core.js" defer></script>
+  <script src="assets/js/core.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
   <nav id="main-nav"></nav>
@@ -23,19 +23,20 @@
         <input type="text" id="internship-role" placeholder="Internship Role" class="border p-2 rounded" />
         <input type="text" id="placement-role" placeholder="Placement Role" class="border p-2 rounded" />
         <input type="date" id="placement-date" class="border p-2 rounded" required />
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 col-span-1 md:col-span-2">Add Record</button>
+        <button type="submit" class="bg-blue-500 text-white p-2 rounded col-span-2">Add Record</button>
       </form>
     </div>
 
-    <div class="flex justify-end gap-2 mb-4">
-      <button onclick="exportCSV()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Export CSV</button>
-      <button onclick="generatePDF()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Generate PDF</button>
+    <!-- Export Buttons -->
+    <div class="flex justify-end gap-4 mb-4">
+      <button onclick="exportCSV()" class="bg-green-500 text-white px-4 py-2 rounded">Export CSV</button>
+      <button onclick="exportPDF()" class="bg-red-500 text-white px-4 py-2 rounded">Export PDF</button>
     </div>
 
-    <table id="internship-placement-table" class="w-full text-left border">
-      <thead class="bg-gray-200">
-        <tr>
-          <th class="p-2">Company Name</th>
+    <table id="internship-placement-table" class="min-w-full bg-white border border-gray-200">
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="p-2">Company</th>
           <th class="p-2">Internship Role</th>
           <th class="p-2">Placement Role</th>
           <th class="p-2">Date</th>
@@ -54,6 +55,10 @@
     if (role === "admin" || role === "faculty" || role === "alumni") formSection.classList.remove("hidden");
 
     let records = JSON.parse(localStorage.getItem("internPlacementData")) || [];
+    if (records.length === 0 && window.seedAllDemoData) {
+      window.seedAllDemoData(false);
+      records = JSON.parse(localStorage.getItem("internPlacementData")) || [];
+    }
 
     const tableBody = document.querySelector("#internship-placement-table tbody");
     const form = document.getElementById("internship-placement-form");

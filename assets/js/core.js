@@ -266,11 +266,11 @@
 
         if (force) {
             showGlobalToast('✨ Demo data successfully re-seeded and refreshed!');
-            setTimeout(() => window.location.reload(), 600);
+            setTimeout(() => window.location.reload(), 500);
         }
     };
 
-    // Run seeding on load
+    // RUN SYNCHRONOUSLY IMMEDIATELY!
     seedAllDemoData(false);
 
     // ==========================================================
@@ -281,7 +281,7 @@
         const body = options.body ? JSON.parse(options.body) : null;
 
         // Artificial latency for realism
-        await new Promise(r => setTimeout(r, 60));
+        await new Promise(r => setTimeout(r, 40));
 
         // 1. Authentication Endpoints
         if (endpoint === '/api/auth/login' && method === 'POST') {
@@ -326,10 +326,8 @@
         // 2. Generic REST Data Endpoints
         const collectionKey = endpoint.split('?')[0];
         
-        // Exact collection or match with prefix
         let dbKey = collectionKey;
         if (!DEFAULT_DEMO_DATA[dbKey]) {
-            // Check if endpoint is /collection/:id
             const parts = endpoint.split('/').filter(Boolean);
             if (parts.length >= 2) {
                 dbKey = '/' + parts[0];
@@ -337,6 +335,10 @@
         }
 
         let dataset = JSON.parse(localStorage.getItem(dbKey) || '[]');
+        if (dataset.length === 0 && DEFAULT_DEMO_DATA[dbKey]) {
+            dataset = DEFAULT_DEMO_DATA[dbKey];
+            localStorage.setItem(dbKey, JSON.stringify(dataset));
+        }
 
         if (method === 'GET') {
             return dataset;
@@ -378,22 +380,22 @@
         if (!toast) {
             toast = document.createElement('div');
             toast.id = 'sms-global-toast';
-            toast.className = 'fixed bottom-5 right-5 z-50 px-5 py-3 rounded-2xl shadow-2xl font-bold text-sm bg-gray-900/95 dark:bg-white text-white dark:text-gray-900 transition-all transform duration-300 translate-y-12 opacity-0 flex items-center gap-2.5 backdrop-blur-md border border-white/20';
+            toast.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:99999;padding:12px 20px;border-radius:14px;font-weight:700;font-size:14px;background:#111827;color:#ffffff;box-shadow:0 10px 25px rgba(0,0,0,0.3);transition:all 0.3s ease;transform:translateY(50px);opacity:0;display:flex;align-items:center;gap:10px;font-family:sans-serif;border:1px solid rgba(255,255,255,0.2);';
             document.body.appendChild(toast);
         }
         toast.innerHTML = message;
-        toast.classList.remove('translate-y-12', 'opacity-0');
-        toast.classList.add('translate-y-0', 'opacity-100');
+        toast.style.transform = 'translateY(0)';
+        toast.style.opacity = '1';
         setTimeout(() => {
-            toast.classList.remove('translate-y-0', 'opacity-100');
-            toast.classList.add('translate-y-12', 'opacity-0');
+            toast.style.transform = 'translateY(50px)';
+            toast.style.opacity = '0';
         }, duration);
     };
 
     // ==========================================================
-    // AUTO-INJECT GLOBAL BRAND HEADER ACROSS ALL PAGES
+    // AUTO-INJECT GLOBAL BRAND HEADER ACROSS ALL PAGES (SELF-CONTAINED CSS)
     // ==========================================================
-    document.addEventListener('DOMContentLoaded', function () {
+    function renderMainNavigation() {
         const navPlaceholder = document.getElementById('main-nav');
         if (!navPlaceholder) return;
 
@@ -401,28 +403,140 @@
         const currentRole = localStorage.getItem('userRole') || loggedInUser.role || 'admin';
 
         navPlaceholder.innerHTML = `
-            <div class="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 py-3 flex flex-wrap justify-between items-center gap-3 sticky top-0 z-40 shadow-xs">
+            <style>
+                .sms-nav-bar {
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: space-between;
+                    align-items: center;
+                    background: rgba(255, 255, 255, 0.98);
+                    border-bottom: 1px solid #e5e7eb;
+                    padding: 10px 24px;
+                    gap: 12px;
+                    position: sticky;
+                    top: 0;
+                    z-index: 1000;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                }
+                .sms-nav-left {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                }
+                .sms-nav-brand {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    font-weight: 900;
+                    color: #111827;
+                    text-decoration: none;
+                    font-size: 18px;
+                    letter-spacing: -0.5px;
+                }
+                .sms-brand-icon {
+                    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+                    color: white;
+                    padding: 6px;
+                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .sms-nav-dash-link {
+                    font-size: 13px;
+                    font-weight: 700;
+                    color: #4f46e5;
+                    text-decoration: none;
+                    padding: 4px 8px;
+                    border-radius: 6px;
+                    background: #eef2ff;
+                    transition: all 0.2s;
+                }
+                .sms-nav-dash-link:hover {
+                    background: #e0e7ff;
+                }
+                .sms-nav-right {
+                    display: flex;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                }
+                .sms-nav-role-badge {
+                    display: flex;
+                    align-items: center;
+                    font-size: 12px;
+                    font-weight: 700;
+                }
+                .sms-nav-role-select {
+                    font-size: 12px;
+                    font-weight: 700;
+                    border: 1px solid #d1d5db;
+                    background: #f9fafb;
+                    color: #1f2937;
+                    border-radius: 8px;
+                    padding: 6px 10px;
+                    cursor: pointer;
+                    outline: none;
+                }
+                .sms-btn-reset {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    font-size: 12px;
+                    font-weight: 700;
+                    background: #4f46e5;
+                    color: white;
+                    border: none;
+                    padding: 6px 12px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    box-shadow: 0 1px 2px rgba(79, 70, 229, 0.3);
+                }
+                .sms-btn-reset:hover {
+                    background: #4338ca;
+                    transform: translateY(-1px);
+                }
+                .sms-nav-user {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding-left: 10px;
+                    border-left: 1px solid #e5e7eb;
+                }
+                .sms-nav-logout {
+                    background: #fee2e2;
+                    color: #dc2626;
+                    border: none;
+                    padding: 6px 10px;
+                    border-radius: 8px;
+                    font-size: 12px;
+                    font-weight: 700;
+                    cursor: pointer;
+                }
+            </style>
+            <div class="sms-nav-bar">
                 <!-- Left: App Logo & Dashboard Link -->
-                <div class="flex items-center space-x-3">
-                    <a href="dashboard.html" class="flex items-center gap-2 font-bold text-gray-800 dark:text-white hover:text-indigo-600 transition text-lg tracking-tight">
-                        <span class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-1.5 rounded-lg shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+                <div class="sms-nav-left">
+                    <a href="dashboard.html" class="sms-nav-brand">
+                        <span class="sms-brand-icon">
+                            <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
                         </span>
                         <span>SMS Pro</span>
                     </a>
-                    <span class="text-gray-300 dark:text-gray-600">|</span>
-                    <a href="dashboard.html" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1">
+                    <span style="color: #cbd5e1;">|</span>
+                    <a href="dashboard.html" class="sms-nav-dash-link">
                         ← Dashboard
                     </a>
                 </div>
 
                 <!-- Right: Role Switcher, Reset Demo Data, User Profile -->
-                <div class="flex items-center flex-wrap gap-2 sm:gap-3">
+                <div class="sms-nav-right">
                     <!-- Quick Role Switcher -->
-                    <div class="flex items-center text-xs font-semibold">
-                        <span class="text-gray-500 dark:text-gray-400 mr-1.5 hidden sm:inline">Role:</span>
-                        <select id="sms-quick-role-select" class="text-xs font-bold border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg px-2.5 py-1.5 focus:ring-2 focus:ring-indigo-500 cursor-pointer">
-                            <option value="admin" ${currentRole === 'admin' ? 'selected' : ''}>👑 Admin</option>
+                    <div class="sms-nav-role-badge">
+                        <select id="sms-quick-role-select" class="sms-nav-role-select">
+                            <option value="admin" ${currentRole === 'admin' ? 'selected' : ''}>👑 Administrator</option>
                             <option value="faculty" ${currentRole === 'faculty' ? 'selected' : ''}>👩‍🏫 Faculty</option>
                             <option value="student" ${currentRole === 'student' ? 'selected' : ''}>🎓 Student</option>
                             <option value="parent" ${currentRole === 'parent' ? 'selected' : ''}>👨‍👧 Parent</option>
@@ -431,19 +545,16 @@
                     </div>
 
                     <!-- Reset Demo Data Button -->
-                    <button onclick="window.seedAllDemoData(true)" class="inline-flex items-center gap-1.5 text-xs font-bold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 border border-indigo-200 dark:border-indigo-800 px-3 py-1.5 rounded-lg transition shadow-xs" title="Reset all data back to realistic human demo records">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    <button onclick="window.seedAllDemoData(true)" class="sms-btn-reset" title="Reset all data back to realistic human demo records">
+                        <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                         <span>Reset Demo Data</span>
                     </button>
 
                     <!-- Logged in User info -->
-                    <div class="flex items-center gap-2 pl-2 border-l border-gray-200 dark:border-gray-700">
-                        <div class="text-right hidden md:block">
-                            <div class="text-xs font-bold text-gray-800 dark:text-gray-200">${loggedInUser.fullName || 'User'}</div>
-                            <div class="text-[10px] text-gray-500 uppercase tracking-wider">${currentRole}</div>
-                        </div>
-                        <button onclick="localStorage.clear(); window.location.href='login.html';" class="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 p-1.5 rounded-lg transition" title="Logout">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    <div class="sms-nav-user">
+                        <span style="font-size: 12px; font-weight: 700; color: #1f2937;">${loggedInUser.fullName || 'User'}</span>
+                        <button onclick="localStorage.clear(); window.location.href='login.html';" class="sms-nav-logout" title="Logout">
+                            Logout
                         </button>
                     </div>
                 </div>
@@ -462,8 +573,14 @@
                 localStorage.setItem('role', newRole);
                 localStorage.setItem('loggedInUser', JSON.stringify(matchedUser));
                 showGlobalToast(`Switched role to: ${newRole.toUpperCase()}`);
-                setTimeout(() => window.location.reload(), 400);
+                setTimeout(() => window.location.reload(), 300);
             });
         }
-    });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderMainNavigation);
+    } else {
+        renderMainNavigation();
+    }
 })();

@@ -30,8 +30,7 @@
     .message {
       margin-top: 10px;
     }
-  </style>
-  <script src="assets/js/core.js" defer></script>
+  <script src="assets/js/core.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
   <nav id="main-nav"></nav>
@@ -105,7 +104,11 @@
     }
 
     function loadTimeTable() {
-      const schedules = JSON.parse(localStorage.getItem("timeTableData")) || [];
+      let schedules = JSON.parse(localStorage.getItem("timeTableData")) || [];
+      if (schedules.length === 0 && window.seedAllDemoData) {
+        window.seedAllDemoData(false);
+        schedules = JSON.parse(localStorage.getItem("timeTableData")) || [];
+      }
       const tbody = document.querySelector("#time-table-table tbody");
       tbody.innerHTML = "";
 
