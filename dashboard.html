@@ -24,49 +24,89 @@
       font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    /* Ambient Background Glow */
+    /* Base Body Styling */
     body {
       background-color: #f8fafc;
-    }
-    body.dark {
-      background-color: #0b0f19;
-      color: #f3f4f6;
+      color: #0f172a;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    .dark .hero-panel {
-      background: linear-gradient(135deg, rgba(30, 27, 75, 0.6), rgba(17, 24, 39, 0.9));
-      border-color: rgba(255, 255, 255, 0.08);
+    /* High-End Night / Dark Mode */
+    html.dark body {
+      background-color: #080c14;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.12) 0px, transparent 50%);
+      color: #f8fafc;
     }
 
-    .light .hero-panel {
-      background: linear-gradient(135deg, #ffffff, #f1f5f9);
-      border-color: #e2e8f0;
+    /* Top Nav Dark Mode */
+    html.dark .top-header {
+      background: rgba(11, 15, 25, 0.85) !important;
+      backdrop-filter: blur(20px) !important;
+      -webkit-backdrop-filter: blur(20px) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     }
 
-    /* Glassmorphism Card Style */
+    /* Hero Banner */
+    .hero-panel-light {
+      background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+    }
+    html.dark .hero-panel-dark {
+      background: linear-gradient(135deg, rgba(26, 23, 68, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), inset 0 1px 1px 0 rgba(255, 255, 255, 0.15) !important;
+    }
+
+    /* Module Cards in Dark Mode */
     .module-card {
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .module-card:hover {
-      transform: translateY(-4px) scale(1.01);
-      box-shadow: 0 20px 30px -10px rgba(79, 70, 229, 0.15), 0 0 0 1px rgba(99, 102, 241, 0.3);
-    }
-    .dark .module-card {
-      background: rgba(17, 24, 39, 0.7);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-    }
-    .dark .module-card:hover {
-      background: rgba(31, 41, 55, 0.85);
-      border-color: rgba(99, 102, 241, 0.4);
-      box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.6), 0 0 20px 2px rgba(99, 102, 241, 0.2);
+    
+    html.dark .module-card {
+      background: rgba(15, 23, 42, 0.75) !important;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
     }
 
-    /* Category Pill Active */
+    html.dark .module-card:hover {
+      background: rgba(30, 41, 59, 0.9) !important;
+      border-color: rgba(129, 140, 248, 0.5) !important;
+      transform: translateY(-5px) scale(1.015);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 25px 2px rgba(99, 102, 241, 0.25) !important;
+    }
+
+    .module-card:hover {
+      transform: translateY(-5px) scale(1.015);
+      box-shadow: 0 20px 35px -10px rgba(79, 70, 229, 0.18), 0 0 0 1px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Category Filter Tab Active State */
     .filter-tab.active {
-      background: #4f46e5;
-      color: #ffffff;
-      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+      background: linear-gradient(135deg, #4f46e5, #6366f1) !important;
+      color: #ffffff !important;
+      border-color: transparent !important;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.45) !important;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    html.dark ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+    }
+    html.dark ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.25);
     }
 
     @keyframes fadeIn {
@@ -79,16 +119,16 @@
   </style>
 </head>
 
-<body class="min-h-screen flex flex-col justify-between transition-colors duration-300 text-gray-900 dark:text-gray-100">
+<body class="min-h-screen flex flex-col justify-between transition-colors duration-300">
 
   <!-- ================= TOP NAVIGATION BAR ================= -->
-  <header class="sticky top-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b border-gray-200/80 dark:border-gray-800 transition-colors">
+  <header class="top-header sticky top-0 z-50 bg-white/95 border-b border-gray-200/80 transition-colors shadow-xs">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap justify-between items-center gap-4">
       
       <!-- Brand & Home -->
       <div class="flex items-center gap-3">
         <a href="dashboard.html" class="flex items-center gap-2.5 group">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/25 group-hover:scale-105 transition-transform">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
               <path d="M12 14l9-5-9-5-9 5 9 5z"/>
               <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
@@ -97,7 +137,7 @@
           <div>
             <div class="text-lg font-black tracking-tight flex items-center gap-1.5 text-gray-900 dark:text-white">
               <span>SMS<span class="text-indigo-600 dark:text-indigo-400">Pro</span></span>
-              <span id="roleHeaderBadge" class="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800"></span>
+              <span id="roleHeaderBadge" class="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700/60"></span>
             </div>
           </div>
         </a>
@@ -107,8 +147,8 @@
       <div class="flex items-center flex-wrap gap-2.5 sm:gap-3">
         
         <!-- Live Role Dropdown Switcher -->
-        <div class="flex items-center text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700">
-          <span class="text-gray-400 mr-1.5 hidden sm:inline">Active Persona:</span>
+        <div class="flex items-center text-xs font-bold bg-gray-100 dark:bg-gray-800/90 px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700/80">
+          <span class="text-gray-500 dark:text-gray-400 mr-1.5 hidden sm:inline">Role:</span>
           <select id="dashboardRoleSelect" class="text-xs font-bold bg-transparent text-gray-800 dark:text-gray-100 outline-none cursor-pointer border-none py-0.5">
             <option value="admin" class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white">👑 Administrator</option>
             <option value="faculty" class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white">👩‍🏫 Faculty</option>
@@ -119,15 +159,15 @@
         </div>
 
         <!-- Reset Demo Data Button -->
-        <button onclick="window.seedAllDemoData(true)" class="inline-flex items-center gap-1.5 text-xs font-bold bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/80 px-3 py-2 rounded-xl transition shadow-xs" title="Reset all datasets back to realistic human records">
+        <button onclick="window.seedAllDemoData(true)" class="inline-flex items-center gap-1.5 text-xs font-bold bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-3 py-2 rounded-xl transition shadow-xs" title="Reset all datasets back to realistic human records">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
           <span class="hidden md:inline">Reset Demo Data</span>
         </button>
 
         <!-- Dark Mode Toggle Switch -->
-        <button id="themeToggleBtn" class="p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl transition shadow-xs" title="Toggle Dark/Light Mode">
-          <svg id="themeIconSun" class="w-4 h-4 hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-          <svg id="themeIconMoon" class="w-4 h-4 block dark:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+        <button id="themeToggleBtn" class="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl transition shadow-xs flex items-center justify-center" title="Toggle Dark/Light Mode">
+          <svg id="themeIconSun" class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          <svg id="themeIconMoon" class="w-4 h-4 text-indigo-400 hidden" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
         </button>
 
         <!-- User Logout Button -->
@@ -144,12 +184,12 @@
   <main class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex-grow">
     
     <!-- Welcome Persona Hero Banner -->
-    <div class="hero-panel rounded-3xl p-6 sm:p-8 mb-8 shadow-xl border relative overflow-hidden transition-all">
+    <div id="heroBannerPanel" class="hero-panel-light dark:hero-panel-dark rounded-3xl p-6 sm:p-8 mb-8 shadow-xl relative overflow-hidden transition-all">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
         
         <!-- User Greeting & Role info -->
         <div class="flex items-center gap-4">
-          <div id="userAvatarContainer" class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-3xl shadow-lg ring-4 ring-white/10 flex-shrink-0">
+          <div id="userAvatarContainer" class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-3xl shadow-lg ring-4 ring-black/5 dark:ring-white/10 flex-shrink-0">
             👑
           </div>
           <div>
@@ -157,7 +197,7 @@
               <span id="rolePillBadge" class="text-xs font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-600 text-white shadow-xs">
                 ADMINISTRATOR
               </span>
-              <span class="text-xs text-gray-400 dark:text-gray-400 font-semibold">• Live Session</span>
+              <span class="text-xs text-gray-500 dark:text-gray-400 font-semibold">• Live Session Active</span>
             </div>
             <h2 id="userGreetingText" class="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight">
               Good Morning, Dr. Rajesh Sharma
@@ -170,7 +210,7 @@
 
         <!-- Role Permissions Tag -->
         <div class="flex flex-col sm:flex-row md:flex-col items-start md:items-end gap-2">
-          <div id="roleStatsBox" class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm text-right">
+          <div id="roleStatsBox" class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-gray-200 dark:border-gray-700/80 shadow-sm text-right">
             <div class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Authorized Scope</div>
             <div id="moduleCountDisplay" class="text-lg font-black text-indigo-600 dark:text-indigo-400">19 Active Modules</div>
           </div>
@@ -184,8 +224,8 @@
       
       <!-- Live Search Box -->
       <div class="relative flex-grow max-w-lg">
-        <input type="text" id="searchBox" placeholder="Search modules by name, keyword, or action..." class="w-full pl-11 pr-14 py-3 bg-white dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 outline-none text-sm font-medium text-gray-900 dark:text-white placeholder-gray-400 transition-all" />
-        <div class="absolute left-3.5 top-3.5 text-gray-400">
+        <input type="text" id="searchBox" placeholder="Search modules by name, keyword, or action..." class="w-full pl-11 pr-14 py-3 bg-white dark:bg-gray-800/90 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 outline-none text-sm font-medium text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-all" />
+        <div class="absolute left-3.5 top-3.5 text-gray-400 dark:text-gray-500">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         </div>
         <div class="absolute right-3.5 top-3 text-[11px] font-bold text-gray-400 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded-md border border-gray-300 dark:border-gray-600">
@@ -245,7 +285,7 @@
         category: "academic",
         roles: ["admin", "faculty", "student", "parent"], 
         href: "attendance-management.html", 
-        iconColor: "from-blue-600 to-indigo-600",
+        iconColor: "from-blue-500 to-indigo-600",
         icon: "calendar",
         tag: { admin: "Mark & Audit", faculty: "Mark Attendance", student: "View Records", parent: "View Attendance" },
         description: "Track student daily attendance, review absence trends, and generate visual analytics charts." 
@@ -255,7 +295,7 @@
         category: "academic",
         roles: ["admin", "faculty", "student", "parent"], 
         href: "examination-management.html", 
-        iconColor: "from-indigo-600 to-purple-600",
+        iconColor: "from-indigo-500 to-purple-600",
         icon: "file-text",
         tag: { admin: "Full Access", faculty: "Enter Exam Marks", student: "View Scores", parent: "View Scores" },
         description: "Schedule exams, record student test scores, and analyze subject performance curves." 
@@ -265,7 +305,7 @@
         category: "academic",
         roles: ["admin", "faculty", "student", "parent"], 
         href: "marksheet-section.html", 
-        iconColor: "from-purple-600 to-pink-600",
+        iconColor: "from-purple-500 to-pink-600",
         icon: "award",
         tag: { admin: "Issue & Manage", faculty: "Issue Marksheets", student: "View Report Card", parent: "View Marksheet" },
         description: "Official student semester marksheets with automated Google Charts visual breakdown." 
@@ -275,7 +315,7 @@
         category: "academic",
         roles: ["admin", "faculty", "student", "parent"], 
         href: "grading-section.html", 
-        iconColor: "from-pink-600 to-rose-600",
+        iconColor: "from-pink-500 to-rose-600",
         icon: "check-circle",
         tag: { admin: "Configure Rules", faculty: "Adjust Scales", student: "Grading Criteria", parent: "Grade Scale" },
         description: "Institutional GPA tiers, minimum score thresholds, and letter grade scaling guidelines." 
@@ -285,7 +325,7 @@
         category: "academic",
         roles: ["admin", "faculty", "student", "parent"], 
         href: "result-processing.html", 
-        iconColor: "from-amber-600 to-orange-600",
+        iconColor: "from-amber-500 to-orange-600",
         icon: "bar-chart-2",
         tag: { admin: "Batch Compute", faculty: "Process Results", student: "View Results", parent: "View Results" },
         description: "Automated pass/fail evaluation, percentage summaries, and batch semester results." 
@@ -295,7 +335,7 @@
         category: "academic",
         roles: ["admin", "faculty", "student", "parent"], 
         href: "time-table-section.html", 
-        iconColor: "from-teal-600 to-emerald-600",
+        iconColor: "from-teal-500 to-emerald-600",
         icon: "clock",
         tag: { admin: "Manage Timetable", faculty: "Manage Schedule", student: "Class Timetable", parent: "Class Schedule" },
         description: "Weekly academic lecture schedules, lecture hall locations, and professor allocations." 
@@ -305,7 +345,7 @@
         category: "academic",
         roles: ["admin", "faculty"], 
         href: "faculty-management.html", 
-        iconColor: "from-cyan-600 to-blue-600",
+        iconColor: "from-cyan-500 to-blue-600",
         icon: "users",
         tag: { admin: "Add/Delete Faculty", faculty: "Colleague Directory" },
         description: "Manage university professors, academic department assignments, and faculty credentials." 
@@ -315,7 +355,7 @@
         category: "campus",
         roles: ["admin", "faculty"], 
         href: "mass-sms-system.html", 
-        iconColor: "from-rose-600 to-red-600",
+        iconColor: "from-rose-500 to-red-600",
         icon: "message-square",
         tag: { admin: "Broadcast SMS", faculty: "Send Alerts" },
         description: "Dispatch urgent campus broadcast alerts, exam timetables, and emergency notifications." 
@@ -325,7 +365,7 @@
         category: "career",
         roles: ["admin", "faculty", "student", "alumni"], 
         href: "internship-placement.html", 
-        iconColor: "from-indigo-600 to-blue-600",
+        iconColor: "from-indigo-500 to-blue-600",
         icon: "briefcase",
         tag: { admin: "Post Drives", faculty: "Post Drives", student: "Browse Placements", alumni: "Post Job Openings" },
         description: "Campus corporate placement drives, internships at Fortune 500 tech companies, and stats." 
@@ -335,7 +375,7 @@
         category: "campus",
         roles: ["admin", "faculty", "student", "alumni"], 
         href: "library-management.html", 
-        iconColor: "from-emerald-600 to-green-600",
+        iconColor: "from-emerald-500 to-green-600",
         icon: "book-open",
         tag: { admin: "Manage Catalog", faculty: "Book Inventory", student: "Search Books", alumni: "Search Catalog" },
         description: "University textbook inventory, ISBN catalog, borrowing history, and instant search." 
@@ -345,7 +385,7 @@
         category: "campus",
         roles: ["admin", "student", "faculty"], 
         href: "canteen-management.html", 
-        iconColor: "from-yellow-600 to-amber-600",
+        iconColor: "from-yellow-500 to-amber-600",
         icon: "coffee",
         tag: { admin: "Manage Menu", faculty: "Menu & POS", student: "RFID Smart-Card Tap" },
         description: "Smart campus canteen food menu management and simulated RFID contactless card charges." 
@@ -355,7 +395,7 @@
         category: "campus",
         roles: ["admin", "student", "parent"], 
         href: "hostel-management.html", 
-        iconColor: "from-violet-600 to-purple-600",
+        iconColor: "from-violet-500 to-purple-600",
         icon: "home",
         tag: { admin: "Room Allotment", student: "My Room Allotment", parent: "Hostel Status" },
         description: "Hostel block assignments, check-in and check-out dates, and occupancy tracking." 
@@ -365,7 +405,7 @@
         category: "campus",
         roles: ["admin", "faculty", "student"], 
         href: "id-card-certificate.html", 
-        iconColor: "from-blue-600 to-cyan-600",
+        iconColor: "from-blue-500 to-cyan-600",
         icon: "credit-card",
         tag: { admin: "Generate All", faculty: "Certificates", student: "Download ID Card" },
         description: "Generate and download verifiable digital student ID cards with QR codes and certificates." 
@@ -375,7 +415,7 @@
         category: "financial",
         roles: ["admin", "faculty", "student"], 
         href: "scholarship-management.html", 
-        iconColor: "from-emerald-600 to-teal-600",
+        iconColor: "from-emerald-500 to-teal-600",
         icon: "dollar-sign",
         tag: { admin: "Add Grants", faculty: "Add Grants", student: "Financial Aid Portal" },
         description: "Institutional merit grants, STEM fellowships, diversity funds, and alumni tuition waivers." 
@@ -385,7 +425,7 @@
         category: "financial",
         roles: ["admin", "student", "parent", "faculty"], 
         href: "student-fees-management.html", 
-        iconColor: "from-indigo-600 to-violet-600",
+        iconColor: "from-indigo-500 to-violet-600",
         icon: "file-text",
         tag: { admin: "Record Receipts", faculty: "View Ledger", student: "Fee Invoices", parent: "Fee Invoices" },
         description: "Tuition fee ledger, verified past transaction receipts, and semester payment status." 
@@ -395,7 +435,7 @@
         category: "financial",
         roles: ["admin", "student", "parent", "faculty"], 
         href: "payment-section.html", 
-        iconColor: "from-purple-600 to-indigo-600",
+        iconColor: "from-purple-500 to-indigo-600",
         icon: "shopping-bag",
         tag: { admin: "Audit Gateway", faculty: "Audit Gateway", student: "Pay Tuition Online", parent: "Pay Tuition Online" },
         description: "Instant tuition payments via UPI, Net Banking, and Cards with scannable barcodes." 
@@ -405,7 +445,7 @@
         category: "campus",
         roles: ["admin", "student", "parent", "faculty"], 
         href: "transportation-management.html", 
-        iconColor: "from-amber-600 to-yellow-600",
+        iconColor: "from-amber-500 to-yellow-600",
         icon: "truck",
         tag: { admin: "Assign Routes", faculty: "View Routes", student: "Bus Schedule", parent: "Transit Tracking" },
         description: "Campus transit routes, bus stop schedules, driver details, and fleet vehicle tracking." 
@@ -415,7 +455,7 @@
         category: "academic",
         roles: ["admin", "faculty", "student", "parent"], 
         href: "admission-section.html", 
-        iconColor: "from-blue-600 to-indigo-600",
+        iconColor: "from-blue-500 to-indigo-600",
         icon: "user-plus",
         tag: { admin: "Approve Applications", faculty: "Review Applications", student: "My Application", parent: "Admission Status" },
         description: "Student admission applications, entrance test rankings, document review, and enrollment." 
@@ -425,7 +465,7 @@
         category: "career",
         roles: ["admin", "faculty", "alumni"], 
         href: "alumni-management.html", 
-        iconColor: "from-purple-600 to-pink-600",
+        iconColor: "from-purple-500 to-pink-600",
         icon: "globe",
         tag: { admin: "Manage Network", faculty: "Alumni Directory", alumni: "Join Directory" },
         description: "Global alumni network directory, industry mentors across Google, Apple & Microsoft." 
@@ -435,7 +475,7 @@
         category: "campus",
         roles: ["admin", "faculty", "student", "alumni", "parent"], 
         href: "event-management.html", 
-        iconColor: "from-rose-600 to-pink-600",
+        iconColor: "from-rose-500 to-pink-600",
         icon: "activity",
         tag: { admin: "Publish Events", faculty: "Schedule Events", student: "Campus Events", alumni: "Join Fests", parent: "Campus Events" },
         description: "HackTech 36-Hour Hackathons, Cultural Euphoria Fests, keynote lectures, and sports meets." 
@@ -542,7 +582,7 @@
           <div class="col-span-full text-center py-16 px-4">
             <div class="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400 mx-auto flex items-center justify-center text-2xl mb-3">🔍</div>
             <h3 class="text-base font-bold text-gray-700 dark:text-gray-300">No matching services found</h3>
-            <p class="text-xs text-gray-400 mt-1">Try clearing your search query or switching category filter tab.</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Try clearing your search query or switching category filter tab.</p>
           </div>
         `;
         return;
@@ -551,26 +591,26 @@
       authorizedModules.forEach(mod => {
         const card = document.createElement("a");
         card.href = mod.href;
-        card.className = "module-card rounded-2xl p-5 block relative border transition-all group bg-white dark:bg-gray-800 border-gray-200/80 dark:border-gray-700 shadow-xs";
+        card.className = "module-card rounded-2xl p-5 block relative border transition-all group bg-white dark:bg-gray-800/90 border-gray-200/80 dark:border-gray-700/80 shadow-xs";
 
         const badgeText = mod.tag[currentRole] || "Authorized";
 
         card.innerHTML = `
           <div class="flex items-center justify-between mb-4">
-            <div class="w-11 h-11 rounded-xl bg-gradient-to-tr ${mod.iconColor} flex items-center justify-center text-white shadow-md shadow-indigo-500/15 group-hover:scale-110 transition-transform">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-tr ${mod.iconColor} flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-110 transition-transform">
               <i data-feather="${mod.icon}" class="w-5 h-5"></i>
             </div>
-            <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-700/60 text-gray-700 dark:text-gray-300 border border-gray-200/60 dark:border-gray-600/50 group-hover:border-indigo-500/40 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+            <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-700/80 text-gray-700 dark:text-gray-200 border border-gray-200/60 dark:border-gray-600/60 group-hover:border-indigo-500/50 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
               ${badgeText}
             </span>
           </div>
 
           <h3 class="text-base font-extrabold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-1.5 flex items-center justify-between">
             <span>${mod.title}</span>
-            <svg class="w-4 h-4 text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all opacity-0 group-hover:opacity-100" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+            <svg class="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all opacity-0 group-hover:opacity-100" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
           </h3>
 
-          <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
+          <p class="text-xs text-gray-500 dark:text-gray-300 line-clamp-2 leading-relaxed">
             ${mod.description}
           </p>
         `;
@@ -585,14 +625,12 @@
     function filterCategory(cat) {
       currentCategory = cat;
       document.querySelectorAll(".filter-tab").forEach(tab => {
-        tab.classList.remove("active", "bg-indigo-600", "text-white");
-        tab.classList.add("bg-white", "dark:bg-gray-800", "text-gray-600", "dark:text-gray-300");
+        tab.classList.remove("active");
       });
 
       const activeTab = document.getElementById(`tab-${cat}`);
       if (activeTab) {
         activeTab.classList.add("active");
-        activeTab.classList.remove("bg-white", "dark:bg-gray-800", "text-gray-600", "dark:text-gray-300");
       }
 
       renderModules(document.getElementById("searchBox").value, currentCategory);
@@ -620,16 +658,19 @@
 
     // Dark Mode Theme Management
     const themeBtn = document.getElementById("themeToggleBtn");
+    const sunIcon = document.getElementById("themeIconSun");
+    const moonIcon = document.getElementById("themeIconMoon");
+
     function applyTheme(isDark) {
       if (isDark) {
         document.documentElement.classList.add("dark");
-        document.body.classList.add("dark");
-        document.body.classList.remove("light");
+        sunIcon.classList.remove("hidden");
+        moonIcon.classList.add("hidden");
         localStorage.setItem("sms_theme", "dark");
       } else {
         document.documentElement.classList.remove("dark");
-        document.body.classList.remove("dark");
-        document.body.classList.add("light");
+        sunIcon.classList.add("hidden");
+        moonIcon.classList.remove("hidden");
         localStorage.setItem("sms_theme", "light");
       }
     }
@@ -638,7 +679,7 @@
     applyTheme(savedTheme === "dark");
 
     themeBtn.addEventListener("click", () => {
-      const isCurrentlyDark = document.body.classList.contains("dark");
+      const isCurrentlyDark = document.documentElement.classList.contains("dark");
       applyTheme(!isCurrentlyDark);
     });
 
