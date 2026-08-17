@@ -51,9 +51,9 @@
   </div>
 
   <script>
-    const role = localStorage.getItem("role") || "guest"; // Default role
+    const role = localStorage.getItem("userRole") || localStorage.getItem("role") || "student";
     const formContainer = document.getElementById("form-container");
-    if (role === "admin" || role === "faculty") {
+    if (role === "admin" || role === "faculty" || role === "student") {
       formContainer.classList.remove("hidden");
     }
 
@@ -64,13 +64,27 @@
       tableBody.innerHTML = "";
       records.forEach((rec, index) => {
         tableBody.innerHTML += `
-          <tr class="border-t">
-            <td class="px-4 py-2">${rec.studentId}</td>
-            <td class="px-4 py-2">${rec.cardType}</td>
-            <td class="px-4 py-2"><a href="${rec.link}" download class="text-blue-600 hover:underline">Download</a></td>
+          <tr class="border-t hover:bg-gray-50">
+            <td class="px-4 py-3 font-bold">${rec.studentId}</td>
+            <td class="px-4 py-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${rec.cardType === 'id-card' ? 'bg-indigo-100 text-indigo-800' : 'bg-emerald-100 text-emerald-800'}">${rec.cardType.toUpperCase()}</span></td>
+            <td class="px-4 py-3">
+              <button onclick="downloadDocument('${rec.studentId}', '${rec.cardType}')" class="text-indigo-600 hover:text-indigo-800 font-bold text-xs bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-200">
+                📄 Generate & Download PDF
+              </button>
+            </td>
           </tr>`;
       });
-      new simpleDatatables.DataTable("#records-table");
+      if (window.simpleDatatables) {
+        new simpleDatatables.DataTable("#records-table");
+      }
+    }
+
+    async function downloadDocument(studentId, cardType) {
+      const pdfUrl = await generatePDF(studentId, cardType);
+      const link = document.createElement("a");
+      link.href = pdfUrl;
+      link.download = `${studentId}_${cardType}.pdf`;
+      link.click();
     }
 
     function exportCSV() {
